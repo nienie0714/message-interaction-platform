@@ -61,9 +61,9 @@ export default {
       // this.deleteUrl = this.baseUrl + '/delete'
       this.deleteUrl = this.baseUrl
     }
-    if (!this.exportUrl || this.exportUrl == '') {
-      this.exportUrl = this.baseUrl + '/exportExcel'
-    }
+    // if (!this.exportUrl || this.exportUrl == '') {
+    //   this.exportUrl = this.baseUrl + '/exportExcel'
+    // }
     if (!this.resetUrl || this.resetUrl == '') {
       this.resetUrl = this.baseUrl + '/resetPsd'
     }
@@ -102,7 +102,7 @@ export default {
       //     })
       //   }
       // })
-      let pms = ['add', 'update', 'reset', 'cgPwd', 'detail', 'delete']
+      let pms = ['add', 'update', 'reset', 'cgPwd', 'detail', 'delete', 'upMq']
       _.forEach(pms, item => {
         this.permissions[item] = true
       })

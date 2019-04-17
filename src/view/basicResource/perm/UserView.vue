@@ -69,8 +69,8 @@ export default {
         formData: [
           {key: 'userName', label: '登录账号', type: 'input', maxlength: 100},
           {key: 'nickname', label: '用户名', type: 'input', maxlength: 50},
-          {key: 'password', label: '密码', type: 'password', minlength: 6, maxlength: 8},
-          {key: 'newPassword', label: '新密码', type: 'password', minlength: 6, maxlength: 8, isHidden: true}
+          {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
+          {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true}
           // {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
         ],
         rules: {

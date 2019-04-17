@@ -1,5 +1,5 @@
 <script>
-import { queryPageDataList } from '../../api/base'
+import { queryPageDataList, getQueryAll } from '../../api/base'
 
 export default {
   data () {
@@ -49,23 +49,26 @@ export default {
   methods: {
     // 发送分页查询请求
     queryDataReq () {
-      /* this.tableData.loading = true */
-      this.getQueryData()
-      let data = {
-        pageNum: this.pageData.currentPage ? this.pageData.currentPage : 1,
-        pageSize: this.pageData.pageSize ? this.pageData.pageSize : 10,
-        data: this.queryData
-      }
-      queryPageDataList(this.queryUrl, data).then(response => {
+      // this.getQueryData()
+      // let data = {
+      //   pageNum: this.pageData.currentPage ? this.pageData.currentPage : 1,
+      //   pageSize: this.pageData.pageSize ? this.pageData.pageSize : 10,
+      //   data: this.queryData
+      // }
+      // queryPageDataList(this.queryUrl, data).then(response => {
+      //   this.setLastUpdateTime()
+      //   if (response.data.data.hasOwnProperty('rows')) {
+      //     this.tableData.data = response.data.data.rows
+      //     if (response.data.data.hasOwnProperty('total')) {
+      //       this.pageData.total = response.data.data.total
+      //     }
+      //     this.customAfterQuery()
+      //   }
+      // })
+      getQueryAll(this.queryUrl).then(response => {
         this.setLastUpdateTime()
-        /* this.tableData.loading = false */
-        if (response.data.data.hasOwnProperty('rows')) {
-          this.tableData.data = response.data.data.rows
-          if (response.data.data.hasOwnProperty('total')) {
-            this.pageData.total = response.data.data.total
-          }
+          this.tableData.data = response.data.data
           this.customAfterQuery()
-        }
       })
     },
     customAfterQuery () {

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {queryAll} from '../../api/base.js'
+import {queryAll, getQueryAll} from '../../api/base.js'
 
 export default {
   props: ['data'],
@@ -44,11 +44,11 @@ export default {
   created () {
     if (this.data.type == 'select') {
       if (this.data.hasOwnProperty('getOptions')) {
-        let query = {}
-        if (this.data.hasOwnProperty('optionsQuery')) {
-          query = this.data.optionsQuery
-        }
-        queryAll(this.data.getOptions, query).then(response => {
+        // let query = {}
+        // if (this.data.hasOwnProperty('optionsQuery')) {
+        //   query = this.data.optionsQuery
+        // }
+        getQueryAll(this.data.getOptions).then(response => {
           if (response.data.code == 0) {
             if (this.data.hasOwnProperty('options')) {
               this.data.options = this.data.options.concat(response.data.data)

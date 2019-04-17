@@ -1,3 +1,73 @@
+// 用户密码校验
+var passwordReg418 = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9_]{4,18}$/
+    if (!reg.test(value)) {
+      callback(new Error('密码必须是4-18位数字字母下划线'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
+// 消费者校验
+var consumerReg = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9_]{1,20}$/
+    if (!reg.test(value)) {
+      callback(new Error('消费者编号必须是1-20位数字字母下划线'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
+// 消息类型校验
+var msgNoValidator = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9_]{1,50}$/
+    if (!reg.test(value)) {
+      callback(new Error('请输入1-50位数字字母下划线'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
+// 消息类型校验
+var msgCnValidator = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9\u4e00-\u9fa5]{1,20}$/
+    if (!reg.test(value)) {
+      callback(new Error('请输入1-20位数字字母汉字'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
+// 描述校验
+var msgRemarkValidator = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9_\\u4e00-\\u9fa5]{1,50}$/
+    if (!reg.test(value)) {
+      callback(new Error('请输入1-50位数字字母汉字下划线'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
 // 唯一性校验
 // basicTableMixin.vue的methods里定义
 /* var unique = (rule, value, callback) => {
@@ -187,20 +257,6 @@ var passwordReg = (rule, value, callback) => {
   }
 }
 
-// 位数在6-8位 => 6-8
-var passwordReg418 = (rule, value, callback) => {
-  if (value != '' && value != null) {
-    let reg = /^[a-zA-Z0-9_]{4,18}$/
-    if (!reg.test(value)) {
-      callback(new Error('密码必须是4-18位数字字母下划线'))
-    } else {
-      callback()
-    }
-  } else {
-    callback()
-  }
-}
-
 // 数字 => 0~6
 var sixNum = (rule, value, callback) => {
   if (value != '' && value != null) {
@@ -298,4 +354,4 @@ var chReg = (rule, value, callback) => {
   }
 }
 
-export { idReg, maxENReg, ndENReg, rdEReg, rthEReg, idNumReg, phoneReg, sevDotTwoDigit, sixDotSixDigit, threeD, degreePos, passwordReg, passwordReg418, sixNum, intNum, twoDecimal, twoDecimalAll, IPReg, portReg, chReg }
+export { passwordReg418, consumerReg, msgNoValidator, msgCnValidator, idReg, maxENReg, ndENReg, rdEReg, rthEReg, idNumReg, phoneReg, sevDotTwoDigit, sixDotSixDigit, threeD, degreePos, passwordReg, sixNum, intNum, twoDecimal, twoDecimalAll, IPReg, portReg, chReg }

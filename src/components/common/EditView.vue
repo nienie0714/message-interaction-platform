@@ -23,8 +23,8 @@
             :autosize="item.autosize"></el-input>
             <!-- select下拉框 -->
             <el-select :ref="item.key" v-if="item.type == 'select'" v-model="editData[item.key]" :placeholder="'请选择' + item.label" :disabled="item.disabled" @change="itemChangeHandle(item, item.change)"
-            :multiple="item.multiple" :filterable="item.filterable" :clearable="item.clearable ? false : true" :default-first-option="item.filterable" :value-key="item.valueKey">
-              <el-option v-for="option in item.options" :key="option.index" :label="typeof(option) != 'object' ? option : option[item.itemLabel]" :value="((typeof(option) != 'object') || item.hasOwnProperty('valueKey')) ? option : option[item.itemKey]">
+            :multiple="item.multiple" :multiple-limit="item.multipleLimit" :filterable="item.filterable" :clearable="item.clearable ? false : true" :default-first-option="item.filterable" :value-key="item.valueKey">
+              <el-option v-for="option in item.options" :key="option.index" :label="typeof(option) != 'object' ? option : option[item.itemLabel]" :value="((typeof(option) != 'object') || item.hasOwnProperty('valueKey')) ? option : (item.hasOwnProperty('itemValue') ? option[item.itemValue] : option[item.itemKey])">
                 <span style="float: left">{{ typeof(option) != 'object' ? option : option[item.itemLabel] }}</span>
                 <span v-if="item.hasOwnProperty('itemLabelSpan')" style="float: right; color: #8492a6; font-size: 13px">{{ option[item.itemLabelSpan] }}</span>
               </el-option>
@@ -33,6 +33,10 @@
             <el-radio-group v-if="item.type == 'tabs'" v-model="editData[item.key]" :size="item.size" :disabled="item.disabled" @change="itemTabsChangeHandle(item, item.change)"><!--  :change="valueChange(data)" -->
               <el-radio-button v-for="option in item.options" :key="option.key" :label="option.key"> {{ option.value }}</el-radio-button>
             </el-radio-group>
+            <!-- checkbox复选框 -->
+            <el-checkbox-group v-if="item.type == 'checkbox'" v-model="editData[item.key]">
+              <el-checkbox v-for="(option, index) in item.options" :label="typeof(option) != 'object' ? option : option[item.itemKey]" :key="index">{{ typeof(option) != 'object' ? option : option[item.itemLabel] }}</el-checkbox>
+            </el-checkbox-group>
             <!-- cascader级联选择器 -->
             <el-cascader v-if="item.type == 'casc'" v-model="editData[item.key]" :disabled="item.disabled" expand-trigger="hover" :clearable="item.clearable?false:true"
             :options="item.options" :props="item.props" filterable :change-on-select="item.selectChange?false:true" @change="handleCascChange(item, item.change)"></el-cascader><!--  @blur="itemChangeHandle(item, item.change)" -->
@@ -53,10 +57,14 @@
             <!-- year/month/date/dates/week/datetime/datetimerange/daterange -->
             <!-- yyyy-年/M、MM-月/W、WW-周/dd-日/HH-24小时制/hh-12小时制、须和A、a-am、PM使用/mm-分/ss-秒/timestamp-时间戳：组件绑定类型为number -->
             <el-date-picker v-if="item.type == 'year' || item.type == 'month' || item.type == 'date' || item.type == 'dates' || item.type == 'week' || item.type == 'datetime' || item.type == 'datetimerange' || item.type == 'daterange'"
-            v-model="editData[item.key]" :type="item.type" :placeholder="'请选择' + item.label" :editable="item.editable" :clearable="item.clearable"
+            v-model="editData[item.key]" :type="item.type" :placeholder="'请选择' + item.label" :editable="item.editable" :clearable="item.clearable" :picker-options="item.hasOwnProperty('pickerOpt') ? item.pickerOpt : {}"
             :size="item.size" :align="item.align" :default-value="item.defaultDate" :format="item.format" :value-format="item.valueFormat" :readonly="item.readonly" :disabled="item.disabled"
             :start-placeholder="item.startPlaceholder || '开始时间'" :end-placeholder="item.endPlaceholder || '结束时间'" :range-separator="item.separator"
             @change="itemChangeHandle(item, item.change)"></el-date-picker>
+            <!-- 时间选择器 -->
+            <el-time-picker v-if="item.type == 'time'" v-model="editData[item.key]" :readonly="item.readonly" :disabled="item.disabled" :editable="item.editable?false:true"
+            :clearable="item.clearable?false:true" :format="item.format" :value-format="item.valueFormat" :placeholder="'请选择' + item.label" :picker-options="item.pickerOpt">
+            </el-time-picker>
             <!-- 自定义日期区间选择器 -->
             <Date-range-picker v-if="item.type == 'dateRangePicker'" :dateRange="item" :editData="editData" v-model="editData[item.key]"></Date-range-picker>
             <!-- 图片上传 -->
@@ -130,9 +138,15 @@ export default {
         }
       } else if (item.type == 'dateRangePicker') {
         this.$set(this.formData.rules, item.key, [])
-        this.formData.rules[item.key].push(
-          {validator: this.dateRangeReg, trigger: 'change'}
-        )
+        if (item.hasOwnProperty('rangeMethod')) {
+          this.formData.rules[item.key].push(
+            {validator: item.rangeMethod, trigger: 'change'}
+          )
+        } else {
+          this.formData.rules[item.key].push(
+            {validator: this.dateRangeReg, trigger: 'change'}
+          )
+        }
         if (item.hasOwnProperty('required')) {
           switch (item.required) {
             case 0: break
@@ -284,7 +298,13 @@ export default {
       if (method) {
         method(this.editData[item.key], param => {
           if (param) {
-            this.editData[param.key] = param.value
+            if (Array.isArray(param)) {
+              param.forEach(item => {
+                this.$set(this.editData, item.key, item.value)
+              })
+            } else {
+              this.$set(this.editData, param.key, param.value)
+            }
           }
         })
       }
@@ -382,12 +402,12 @@ export default {
       }
     },
     dateRangeReg (rule, value, callback) {
-      if (value.hasOwnProperty('start') && value.hasOwnProperty('end')) {
-        if (value.start && value.end) {
-          if (value.start > value.end) {
-            let same = this.formData.formData.filter((obj) => {
-              return obj.key == rule.field
-            })
+      let same = this.formData.formData.find((obj) => {
+        return obj.key == rule.field
+      })
+      if (value.hasOwnProperty(same.key1) && value.hasOwnProperty(same.key2)) {
+        if (value[same.key1] && value[same.key2]) {
+          if (value[same.key1] > value[same.key2]) {
             callback(new Error(same.regInfo ? same.regInfo : '开始时间必须小于等于结束时间'))
           }
         }
@@ -410,37 +430,46 @@ export default {
       callback() */
     },
     dateRangeRequired1 (rule, value, callback) {
-      if (value.hasOwnProperty('start')) {
-        if (value.start) {
-          callback()
-        }
-      }
-      let same = this.formData.formData.filter((obj) => {
+      let same = this.formData.formData.find((obj) => {
         return obj.key == rule.field
       })
-      callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间不能为空'))
+      if (value.hasOwnProperty(same.key1)) {
+        if (value[same.key1]) {
+          callback()
+        } else {
+          callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间不能为空'))
+        }
+      } else {
+        callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间不能为空'))
+      }
     },
     dateRangeRequired2 (rule, value, callback) {
-      if (value.hasOwnProperty('end')) {
-        if (value.end) {
-          callback()
-        }
-      }
-      let same = this.formData.formData.filter((obj) => {
+      let same = this.formData.formData.find((obj) => {
         return obj.key == rule.field
       })
-      callback(new Error(same.requiredInfo ? same.requiredInfo : '结束时间不能为空'))
+      if (value.hasOwnProperty(same.key2)) {
+        if (value[same.key2]) {
+          callback()
+        } else {
+          callback(new Error(same.requiredInfo ? same.requiredInfo : '结束时间不能为空'))
+        }
+      } else {
+        callback(new Error(same.requiredInfo ? same.requiredInfo : '结束时间不能为空'))
+      }
     },
     dateRangeRequired3 (rule, value, callback) {
-      if (value.hasOwnProperty('start') && value.hasOwnProperty('end')) {
-        if (value.start && value.end) {
-          callback()
-        }
-      }
-      let same = this.formData.formData.filter((obj) => {
+      let same = this.formData.formData.find((obj) => {
         return obj.key == rule.field
       })
-      callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间/结束时间均不能为空'))
+      if (value.hasOwnProperty(same.key1) && value.hasOwnProperty(same.key2)) {
+        if (value[same.key1] && value[same.key2]) {
+          callback()
+        } else {
+          callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间/结束时间均不能为空'))
+        }
+      } else {
+        callback(new Error(same.requiredInfo ? same.requiredInfo : '开始时间/结束时间均不能为空'))
+      }
     },
     handleOpen () {
       let title = this.formData.title
@@ -456,7 +485,7 @@ export default {
           this.$refs['ruleForm'].clearValidate()
         }
       })
-      this.formData.formData.forEach(item => {
+      this.formData.formData.forEach((item, index) => {
         if (item.type == 'upload' || item.type == 'uploadFile') {
           this.fileItem = JSON.parse(JSON.stringify(item))
           if (this.fileItem.hasOwnProperty('required') && this.fileItem.required) {
@@ -482,10 +511,23 @@ export default {
             case '详情': this.$set(this.editData, item.key, item.value)
                         break
           }
-        } else if (item.type == 'select' || item.type == 'casc' || item.type == 'trans' || item.type == 'tree' || item.type == 'datetimerange' || item.type == 'slot') {
+        } else if (item.type == 'date' || item.type == 'datetime') {
+          switch (title) {
+            case '新增': if (!item.defaultValue) {
+              this.$set(this.editData, item.key, null)
+            } else {
+              this.$set(this.editData, item.key, item.defaultValue)
+            }
+            break
+            case '编辑': this.$set(this.editData, item.key, item.value)
+                        break
+            case '详情': this.$set(this.editData, item.key, item.value)
+                        break
+          }
+        } else if (item.type == 'select' || item.type == 'checkbox' || item.type == 'casc' || item.type == 'trans' || item.type == 'tree' || item.type == 'datetimerange' || item.type == 'slot') {
           if (title == '新增' || ((title == '编辑' || title == '详情') && !item.value)) {
             if (item.type == 'select' && !item.hasOwnProperty('multiple')) {
-              this.$set(this.editData, item.key, null)
+              this.$set(this.editData, item.key, item.defaultValue ? item.defaultValue : null)
             } else {
               this.$set(this.editData, item.key, [])
             }
@@ -532,7 +574,7 @@ export default {
                   item.options = response.data.data
                   this.editData[item.key] = [item.options[0][item.props.value]]
                   this.handleCascChange(item, item.change)
-                } else if ((title == '新增') && (item.type == 'select') && item.defaultValue) {
+                } else if ((title == '新增') && (item.type == 'select') && item.default) {
                   item.options = response.data.data
                   if (item.hasOwnProperty('itemKey')) {
                     this.editData[item.key] = item.options[0][item.itemKey]
@@ -552,17 +594,23 @@ export default {
           }
         } else if (item.type == 'dateRangePicker') {
           switch (title) {
-            case '新增': this.$set(this.editData, item.key, {})
-                        this.$set(this.editData, item.key1, null)
-                        this.$set(this.editData, item.key2, null)
+            case '新增': if (item.hasOwnProperty('defaultValue')) {
+                          this.$set(this.editData, item.key, item.defaultValue)
+                          this.$set(this.editData, item.key1, item.defaultValue[item.key1])
+                          this.$set(this.editData, item.key2, item.defaultValue[item.key2])
+                        } else {
+                          this.$set(this.editData, item.key, {})
+                          this.$set(this.editData, item.key1, null)
+                          this.$set(this.editData, item.key2, null)
+                        }
                         break
             case '编辑': this.$set(this.editData, item.key, item.value)
-                        this.$set(this.editData, item.key1, item.value.start)
-                        this.$set(this.editData, item.key2, item.value.end)
+                        this.$set(this.editData, item.key1, item.value[item.key1])
+                        this.$set(this.editData, item.key2, item.value[item.key2])
                         break
             case '详情': this.$set(this.editData, item.key, item.value)
-                        this.$set(this.editData, item.key1, item.value.start)
-                        this.$set(this.editData, item.key2, item.value.end)
+                        this.$set(this.editData, item.key1, item.value[item.key1])
+                        this.$set(this.editData, item.key2, item.value[item.key2])
                         break
           }
         } else {
@@ -583,7 +631,9 @@ export default {
         }
         if (item.hasOwnProperty('isDisabled')) {
           this.$set(item, 'disabled', true)
-          this.$delete(this.rules, item.key)
+          if (!item.hasOwnProperty('holdRule')) {
+            this.$delete(this.rules, item.key)
+          }
         }
         // 清除所有hidden的rule
         if (item.hasOwnProperty('isHidden')) {
@@ -624,6 +674,28 @@ export default {
           }
         }
       })
+      if (this.formData.hasOwnProperty('queryAllUrl')) {
+        let optionsKeyArr = [...new Set(_.compact(_.map(this.formData.formData, 'optionsKey')))]
+        queryAll(this.formData.queryAllUrl, {key: optionsKeyArr.join()}).then(res => {
+          if (res.data.code == 0) {
+            for (let i = 0; i < this.formData.formData.length; i++) {
+              if (this.formData.formData[i].hasOwnProperty('optionsKey')) {
+                if (res.data.data.hasOwnProperty(this.formData.formData[i].optionsKey)) {
+                  if (this.formData.formData[i].type == 'slot') {
+                    this.$set(this.formData.formData[i].tabelFields[0], 'options', res.data.data[this.formData.formData[i].optionsKey])
+                  } else {
+                    this.$set(this.formData.formData[i], 'options', res.data.data[this.formData.formData[i].optionsKey])
+                  }
+                } else {
+                  this.showError('获取' + this.formData.formData[i].label + '信息', '请重新尝试 !')
+                }
+              }
+            }
+          } else {
+            this.showError('获取资源信息', '请重新尝试 !')
+          }
+        })
+      }
     },
     httpRequest (file) {
       var reader = new FileReader()
@@ -706,9 +778,13 @@ export default {
                   }
                 } else if (this.formData.formData[i].type == 'slot') {
                   if (this.formData.formData[i].hasOwnProperty('saveKey')) {
-                    let arr = this.editData[this.formData.formData[i].key]
-                    this.editData[this.formData.formData[i].saveKey] = arr
-                    this.$delete(this.editData, this.formData.formData[i].key)
+                    if (this.formData.formData[i].hasOwnProperty('tempArr')) {
+                      this.editData[this.formData.formData[i].saveKey] = this.formData.formData[i].tempArr
+                    } else {
+                      let arr = this.editData[this.formData.formData[i].key]
+                      this.editData[this.formData.formData[i].saveKey] = arr
+                      this.$delete(this.editData, this.formData.formData[i].key)
+                    }
                   }
                 } else if (this.formData.formData[i].type == 'select' && this.formData.formData[i].hasOwnProperty('valueKey')) {
                   if (typeof (this.editData[_that.formData.formData[i].key]) == 'object') {
@@ -846,7 +922,6 @@ export default {
   right: 5px;
 }
 .tree-filter-all {
-  width: calc(100% - 20px);
   display: inline;
   position: absolute;
   top: 10px;

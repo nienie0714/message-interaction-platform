@@ -16,13 +16,10 @@
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
         <template slot="button-slot-scope" slot-scope="scopeData">
           <div v-if="permissions.reset" class="tool-div-button button-reset" title="重置密码" @click="handleReset(scopeData.data)"></div>
-          <div v-if="permissions.cgPwd" class="tool-div-button button-reset" title="修改密码" @click="handlePwd(scopeData.data)"></div>
         </template>
-        <!-- <template slot="button-slot-scope" slot-scope="scopeData">
-        </template> -->
       </Table-view>
     </el-main>
-    <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit" @handleReset="saveReset" @handlePwd="savePassword"></Edit-view>
+    <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit" @handleReset="saveReset"></Edit-view>
     <Warning-box-view :data="deleteData" @handleConfirm="handleDeleteConfirm" @handleClose="handleDeleteClose"></Warning-box-view>
   </el-container>
 </template>
@@ -35,7 +32,7 @@ import ToolButtonView from '../../../components/common/ToolButtonView'
 import EditView from '../../../components/common/EditView'
 import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
-import {passwordReg, passwordReg418} from '../../../util/rules.js'
+import {passwordReg, passwordReg418, consumerReg} from '../../../util/rules.js'
 import {postData} from '../../../api/base.js'
 
 // const tableHeight = ''
@@ -67,28 +64,34 @@ export default {
         className: 'twiceCol',
         key: 'userName',
         formData: [
-          {prop: 'consumerNo', label: '用户名', fixed: true, hidden: false},
-          {prop: 'isConfirm', label: '自动确认', type: 'tabs', hidden: false, optionKey: 'isYOrN', width: 70},
-          {key: 'expiryTime', label: '账号到期时间', type: 'date', format: 'yyyy-MM-dd HH:mm:ss', valueFormat: 'yyyy-MM-dd HH:mm:ss', defaultValue: '', pickerOpt: this.pickerOptMethod},
-          {prop: 'isUseable', label: '是否启用', type: 'tabs', hidden: false, optionKey: 'isYOrN', width: 70}
+          {key: 'consumerNo', label: '用户名', type: 'input', minlength: 1, maxlength: 20},
+          {key: 'consumerPwd', label: '密码', type: 'password', minlength: 4, maxlength: 18, isHidden: false},
+          {key: 'confirmPassword', label: '确认密码', type: 'password', minlength: 4, maxlength: 18, isHidden: false},
+          {key: 'expiryTime', label: '过期时间', type: 'datetime', format: 'yyyy-MM-dd HH:mm:ss', valueFormat: 'yyyy-MM-dd HH:mm:ss', defaultValue: '', pickerOpt: this.pickerOptMethod, change: this.expiryValidator},
+          {key: 'isConfirm', label: '是否确认', type: 'tabs', tabsKey: 'isYOrN', options: [], defaultValue: 'N'},
+          {key: 'isUseable', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN', options: []}
         ],
         rules: {
-          nickname: [
-            {required: true, message: '必填项', trigger: 'blur'}
+          consumerNo: [
+            {required: true, message: '消费者编号不能为空', trigger: 'blur'},
+            {validator: consumerReg, trigger: 'blur'}
           ],
-          userName: [
-            {required: true, message: '必填项', trigger: 'blur'}
-          ],
-          password: [
+          consumerPwd: [
             {required: true, message: '必填项', trigger: 'blur'},
             {validator: passwordReg418, trigger: 'blur'}
           ],
-          newPassword: [
+          confirmPassword: [
             {required: true, message: '必填项', trigger: 'blur'},
             {validator: passwordReg418, trigger: 'blur'}
           ]
         }
       },
+      pickerOptMethod: {
+        disabledDate: (time) => {
+          return (time.getTime() < new Date(this.nowTime).getTime() - 8.64e7)
+        }
+      },
+      nowTime: null,
       // 查询条件每行个数
       colSize: 4,
       // 查询条件设置
@@ -144,24 +147,38 @@ export default {
         multipleSelection: [],
         fields: [
           {prop: 'consumerNo', label: '用户名', fixed: true, hidden: false},
-          {prop: 'isConfirm', label: '自动确认', fixed: false, hidden: false, optionKey: 'isYOrN'},
+          {prop: 'isConfirm', label: '是否确认', fixed: false, hidden: false, optionKey: 'isYOrN'},
           {prop: 'expiryTime', label: '账号到期时间', fixed: true, hidden: false},
           {prop: 'isUseable', label: '是否启用', fixed: false, hidden: false, optionKey: 'isYOrN'}
         ]
       }
     }
   },
+  mounted () {
+    this.formData.formData[3].pickerOpt = {
+      disabledDate: (time) => {
+        return (time.getTime() < new Date(this.nowTime).getTime() - 8.64e7)
+      }
+    }
+  },
   methods: {
+    expiryValidator (val) {
+      if (new Date() > new Date(val)) {
+        this.showErrorCustom('过期时间必须大于当前时间 ！', '')
+      }
+    },
     // 新增
     handleAdd () {
       for (let i = 0; i < this.formData.formData.length; i++) {
         this.$set(this.formData.formData[i], 'value', '')
+        this.$set(this.formData.formData[i], 'disabled', false)
         this.$set(this.formData.formData[i], 'isHidden', false)
-        if (this.formData.formData[i].key == 'newPassword') {
-          this.formData.formData[i].isHidden = true
-        } else if (this.formData.formData[i].key == 'userName') {
+        if (this.formData.formData[i].key == 'consumerNo') {
           this.$set(this.formData.formData[i], 'type', 'input')
-          this.$set(this.formData.formData[i], 'isHidden', false)
+        }
+        if (this.formData.formData[i].key == 'expiryTime') {
+          this.nowTime = new Date()
+          this.$set(this.formData.formData[i], 'pickerOpt', this.pickerOptMethod)
         }
       }
       this.formData.title = '新增'
@@ -171,7 +188,7 @@ export default {
     handleDetail (row) {
       for (let i = 0; i < this.formData.formData.length; i++) {
         this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
+        if (this.formData.formData[i].key == 'consumerPwd' || this.formData.formData[i].key == 'confirmPassword') {
           this.$set(this.formData.formData[i], 'isHidden', true)
         } else {
           this.$set(this.formData.formData[i], 'isHidden', false)
@@ -184,11 +201,14 @@ export default {
       var obj = {}
       if (this.formData.title == '编辑') {
         obj = JSON.parse(JSON.stringify(data))
-        this.$delete(obj, 'password')
-        this.$delete(obj, 'newPassword')
+        this.$delete(obj, 'consumerPwd')
       }
       if (this.formData.title == '新增') {
         obj = JSON.parse(JSON.stringify(data))
+        if (obj.consumerPwd != obj.confirmPassword) {
+          this.showErrorCustom('两次密码输入不一致，请修改', '')
+          return
+        }
       }
       return obj
     },
@@ -196,11 +216,18 @@ export default {
     handleEdit (row) {
       for (let i = 0; i < this.formData.formData.length; i++) {
         this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
+        if (this.formData.formData[i].key == 'consumerPwd' || this.formData.formData[i].key == 'confirmPassword') {
           this.$set(this.formData.formData[i], 'isHidden', true)
-        } else if (this.formData.formData[i].key == 'userName') {
+        } else if (this.formData.formData[i].key == 'consumerNo') {
           this.$set(this.formData.formData[i], 'type', 'pInput')
           this.$set(this.formData.formData[i], 'isHidden', false)
+        } else if (this.formData.formData[i].key == 'isConfirm') {
+          this.$set(this.formData.formData[i], 'isHidden', false)
+          this.$set(this.formData.formData[i], 'disabled', true)
+        } else if (this.formData.formData[i].key == 'expiryTime') {
+          this.nowTime = new Date()
+          this.$set(this.formData.formData[i], 'isHidden', false)
+          this.$set(this.formData.formData[i], 'pickerOpt', this.pickerOptMethod)
         } else {
           this.$set(this.formData.formData[i], 'isHidden', false)
         }
@@ -211,59 +238,46 @@ export default {
     // 重置
     handleReset (row) {
       for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password') {
+        if (this.formData.formData[i].key == 'consumerNo') {
+          this.$set(this.formData.formData[i], 'type', 'pInput')
+          this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
+        } else if (this.formData.formData[i].key == 'consumerPwd' || this.formData.formData[i].key == 'confirmPassword') {
           this.$set(this.formData.formData[i], 'isHidden', false)
           this.$set(this.formData.formData[i], 'value', '')
-        } else if (this.formData.formData[i].key == 'userName') {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-          this.$set(this.formData.formData[i], 'type', 'pInput')
         } else {
           this.$set(this.formData.formData[i], 'isHidden', true)
         }
       }
+      console.log(this.formData.formData)
       this.formData.title = '重置密码'
       this.formData.visible = true
     },
+    customResetBefore (data) {
+      var obj = JSON.parse(JSON.stringify(data))
+      if (obj.consumerPwd != obj.confirmPassword) {
+        this.showErrorCustom('两次密码输入不一致，请修改', '')
+        return
+      }
+      return obj
+    },
     // 发送重置密码请求
     saveReset (data) {
-      postData(this.resetUrl, data).then(response => {
-        if (response.data.code == 0) {
-          this.formData.visible = false
-          this.showSuccess('密码重置')
-          this.customMethod()
-          this.queryDataReq(1)
-        }
+      var obj = this.customResetBefore(data)
+      if (obj != null) {
+        postData(this.resetUrl, obj).then(response => {
+          if (response.data.code == 0) {
+            this.formData.visible = false
+            this.showSuccess('密码重置')
+            this.customMethod()
+            this.queryDataReq(1)
+          } else {
+            this.showError('密码重置')
+          }
+          this.formData.loading = false
+        })
+      } else {
         this.formData.loading = false
-      })
-    },
-    // 修改密码
-    handlePwd (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-          this.$set(this.formData.formData[i], 'value', '')
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        }
       }
-      this.formData.title = '修改密码'
-      this.formData.visible = true
-    },
-    // 发送修改密码请求
-    savePassword (data) {
-      postData(this.pwUrl, data).then(response => {
-        if (response.data.code == 0) {
-          this.formData.visible = false
-          this.showSuccess('密码修改')
-          this.customMethod()
-          this.queryDataReq(1)
-        } else if (response.data.code == -1) {
-            this.showError('修改密码', response.data.msg)
-        }
-        this.formData.loading = false
-      })
     }
   }
 }

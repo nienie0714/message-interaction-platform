@@ -10,7 +10,11 @@
     <el-main class="page-table-view">
       <div class="page-table-header">
         <div class="page-table-title">查询结果</div>
-        <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete"></Tool-button-view>
+        <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete">
+          <template slot="button-slot-scope">
+            <div v-if="permissions.upMq" class="tool-div-button tool-bind" title="数据同步" @click="handleUpdateMqByDb"></div>
+          </template>
+        </Tool-button-view>
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete"></Table-view>
@@ -28,8 +32,9 @@ import ToolButtonView from '../../../components/common/ToolButtonView'
 import EditView from '../../../components/common/EditView'
 import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
-import { queryAll } from '../../../api/base.js'
-import {twoDecimal, threeD, phoneReg, maxENReg} from '../../../util/rules.js'
+import { queryAll, getQueryAll, postData } from '../../../api/base.js'
+import _ from 'lodash'
+import {twoDecimal, threeD, phoneReg, maxENReg, msgNoValidator, msgCnValidator} from '../../../util/rules.js'
 
 // const tableHeight = ''
 
@@ -45,7 +50,9 @@ export default {
   data () {
     return {
       // 基础路径
-      baseUrl: 'message/aomsMsgDef',
+      baseUrl: 'manage/msgDefinition',
+      queryUrl: 'manage/msgDefinition/queryAll',
+      upMqUrl: 'manage/consumer/updateMqByDb',
       // 查询条件每行个数
       colSize: 5,
       formData: {
@@ -53,33 +60,33 @@ export default {
         visible: false,
         inline: true,
         className: 'twiceCol',
-        groupKey: ['msgTypeNo', 'msgTypeSubNo'],
-        groupKeyUrl: 'message/aomsMsgDef/queryAll',
+        key: 'msgTypeId',
         formData: [
-          {key: 'msgTypeId', label: '消息类型ID', type: 'pInput', isHidden: true},
-          {key: 'msgTypeNo', label: '消息类型编号', type: 'input', maxlength: 50},
-          {key: 'msgTypeCn', label: '消息类型名称', type: 'input', maxlength: 50},
-          {key: 'msgTypeSubNo', label: '消息子类型编号', type: 'input', maxlength: 50},
-          {key: 'msgTypeSubCn', label: '消息子类型名称', type: 'input', maxlength: 50},
+          {key: 'msgTypeId', label: '消息类型Id', type: 'input', isHidden: 'true', maxlength: 50},
+          {key: 'msgType', label: '消息类型编号', type: 'input', maxlength: 50},
+          {key: 'msgTypeCn', label: '消息类型名称', type: 'input', maxlength: 18},
+          {key: 'msgSubtype', label: '消息子类型编号', type: 'input', maxlength: 50},
+          {key: 'msgSubtypeCn', label: '消息子类型名称', type: 'input', maxlength: 18},
           {key: 'msgPubType', label: '消息发布类型', type: 'tabs', tabsKey: 'msgType', options: []},
-          {key: 'sortkey', label: '排序码', type: 'input'},
+          {key: 'lifecycle', label: '生命周期', type: 'number', position: 'right', min: 0, step: 1},
           {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
         ],
         rules: {
-          msgTypeNo: [
-            {required: true, message: '必填项', trigger: 'blur'}
+          msgType: [
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: msgNoValidator, trigger: 'blur'}
           ],
           msgTypeCn: [
-            {required: true, message: '必填项', trigger: 'blur'}
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: msgCnValidator, trigger: 'blur'}
           ],
-          msgTypeSubNo: [
-            {required: true, message: '必填项', trigger: 'blur'}
+          msgSubtype: [
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: msgNoValidator, trigger: 'blur'}
           ],
-          msgTypeSubCn: [
-            {required: true, message: '必填项', trigger: 'blur'}
-          ],
-          sortkey: [
-            {validator: threeD, trigger: 'blur'}
+          msgSubtypeCn: [
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: msgCnValidator, trigger: 'blur'}
           ]
         }
       },
@@ -87,25 +94,25 @@ export default {
       queryList: [
         {
           // 'p': '消息类型',
-          key: 'msgTypeCn',
+          key: 'msgType',
           value: null,
           type: 'select',
           filterable: true,
           inputText: '消息类型',
-          getOptions: '/message/aomsMsgDef/getMsgType',
-          optKey: 'msgTypeCn',
+          getOptions: '/manage/msgDefinition/queryAll',
+          optKey: 'msgType',
           optLabel: 'msgTypeCn',
           span: 3
         }, {
           // 'p': '消息子类型',
-          key: 'msgTypeSubCn',
+          key: 'msgSubtype',
           value: null,
           type: 'select',
           filterable: true,
           inputText: '消息子类型',
-          getOptions: '/message/aomsMsgDef/getMsgTypeSub',
-          optKey: 'msgTypeSubCn',
-          optLabel: 'msgTypeSubCn',
+          getOptions: '/manage/msgDefinition/queryAll',
+          optKey: 'msgSubtype',
+          optLabel: 'msgSubtypeCn',
           span: 3
         }
       ],
@@ -122,30 +129,44 @@ export default {
         key: 'msgTypeId',
         multipleSelection: [],
         fields: [
-          {prop: 'msgTypeNo', label: '消息类型编号', fixed: true, hidden: false},
+          {prop: 'msgTypeId', label: '消息类型Id', fixed: true, hidden: true},
+          {prop: 'msgType', label: '消息类型编号', fixed: true, hidden: false},
           {prop: 'msgTypeCn', label: '消息类型名称', fixed: false, hidden: false},
-          {prop: 'msgTypeSubNo', label: '消息子类型编号', fixed: false, hidden: false},
-          {prop: 'msgTypeSubCn', label: '消息子类型名称', fixed: false, hidden: false},
-          {prop: 'msgPubType', label: '消息发布类型', fixed: false, hidden: false, optionKey: 'msgType'}
+          {prop: 'msgSubtype', label: '消息子类型编号', fixed: false, hidden: false},
+          {prop: 'msgSubtypeCn', label: '消息子类型名称', fixed: false, hidden: false},
+          {prop: 'msgPubType', label: '消息发布类型', fixed: false, hidden: false, optionKey: 'msgType'},
+          {prop: 'lifecycle', label: '生命周期', fixed: false, hidden: false} // 0表示永久消息
         ]
       }
     }
   },
   methods: {
-    customMethod () {
+    customMethod () { // 新增后重新获取下拉框列表数据
       this.queryList.forEach(item => {
-        if (item.key == 'msgTypeCn') {
-          queryAll(item.getOptions, {}).then(response => {
+        if (item.key == 'msgType') {
+          getQueryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              this.$set(item, 'options', response.data.data)
+              let arr1 = _.unionBy(response.data.data, 'msgType')
+              this.$set(item, 'options', arr1)
             }
           })
-        } else if (item.key == 'msgTypeSubCn') {
-          queryAll(item.getOptions, {}).then(response => {
+        } else if (item.key == 'msgSubtype') {
+          queryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              this.$set(item, 'options', response.data.data)
+              let arr2 = _.unionBy(response.data.data, 'msgSubtype')
+              this.$set(item, 'options', arr2)
             }
           })
+        }
+      })
+    },
+    // 一键绑定
+    handleUpdateMqByDb () {
+      postData(this.upMqUrl, {}).then(res => {
+        if (res.data.code == 0) {
+          this.showSuccess('数据同步')
+        } else {
+          this.showError('数据同步', '请联系管理员 !')
         }
       })
     }
