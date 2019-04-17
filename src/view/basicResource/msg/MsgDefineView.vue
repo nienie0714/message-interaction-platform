@@ -88,7 +88,6 @@ export default {
     return {
       // 基础路径
       baseUrl: 'manage/msgDefinition',
-      queryUrl: 'manage/msgDefinition/queryAll',
       upMqUrl: 'manage/consumer/updateMqByDb',
       // 查询条件每行个数
       colSize: 5,
