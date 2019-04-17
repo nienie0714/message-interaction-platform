@@ -193,11 +193,28 @@ export default {
 .el-table__fixed-body-wrapper .current-row {
   box-shadow: none;
 }
+.menu-status-dialog .el-table__body-wrapper .el-table__row:not(.el-table__row--striped).hover-row td,
+.menu-status-dialog .el-table__body-wrapper .el-table__row:not(.el-table__row--striped).current-row td {
+  background-color: #215870 !important;
+}
 .el-table__body-wrapper .current-row {
-  background:rgba(60,166,200,0.4) !important;
+  background-color: #215870 !important;
 }
 .el-table__body-wrapper .hover-row {
-  background:rgba(60,166,200,0.4) !important;
+  background-color:#215870 !important;
+}
+.basic-resource-contain .el-table .el-table__body-wrapper .el-table__row,
+.menu-status-dialog .el-table .el-table__body-wrapper .el-table__row:not(.el-table__row--striped),
+.basic-resource-contain .el-table .el-table__fixed-body-wrapper .el-table__row,
+.menu-status-dialog .el-table .el-table__fixed-body-wrapper .el-table__row:not(.el-table__row--striped),
+.flight-gantt-bottom-container .el-table .el-table__body-wrapper .el-table__row {
+  background-color: #0e2d3e; /* rgba(60,166,200,0.1); */
+}
+.basic-resource-contain .el-table .el-table__body-wrapper .el-table__row.el-table__row--striped,
+.menu-status-dialog .el-table .el-table__body-wrapper .el-table__row.el-table__row--striped,
+.basic-resource-contain .el-table .el-table__fixed-body-wrapper .el-table__row.el-table__row--striped,
+.flight-gantt-bottom-container .el-table .el-table__body-wrapper .el-table__row.el-table__row--striped {
+  background-color: #081e2d;
 }
 .table-opt-col>div {
   display: flex;

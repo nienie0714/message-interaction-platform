@@ -211,6 +211,11 @@ input[type="number"] {
   box-shadow: 0 0 12px rgba(3, 167, 134, 0.7) inset;
   border: 1px solid #03a786 !important;
 }
+/* .tool-import {
+  background-image: url('../assets/img/basic/icon_btn_import.png');
+  box-shadow: 0 0 12px rgba(60,166,200,0.4)inset,0 0 12px rgba(60,166,200,0.2);
+  border: 1px solid rgba(60,166,200,0.6) !important;
+} */
 .tool-default {
   background-image: url('../assets/img/basic/icon_btn_recover.png');
   background-color: rgba(3, 167, 134, 0.4);
@@ -272,6 +277,9 @@ input[type="number"] {
 .el-table__fixed-right::before, .el-table__fixed::before {
   height: 0 !important;
 }
+.el-table__fixed-right-patch {
+  height: 0 !important;
+}
 .el-table {
   font-size: 15px;
 }
@@ -279,16 +287,13 @@ input[type="number"] {
 .flight-contain .el-table, .el-table th, .el-table tr,
 .tasksched-contain .el-table, .el-table th, .el-table tr,
 .basic-resource-contain .el-table, .el-table th, .el-table tr,
+.menu-status-dialog .el-table, .el-table th, .el-table tr,
 .flight-gantt-bottom-container .el-table, .el-table th, .el-table tr {
   background: none;
+  border: none;
 }
-.basic-resource-contain .el-table .el-table__body-wrapper .el-table__row,
-.flight-gantt-bottom-container .el-table .el-table__body-wrapper .el-table__row {
-  background-color: rgba(60,166,200,0.1);
-}
-.basic-resource-contain .el-table .el-table__body-wrapper .el-table__row.el-table__row--striped,
-.flight-gantt-bottom-container .el-table .el-table__body-wrapper .el-table__row.el-table__row--striped {
-  background: none;
+.el-table--border::after, .el-table--group::after {
+  background-color: transparent;
 }
 /* *列表复选按钮 */
 .el-radio .el-radio__inner,
@@ -327,8 +332,11 @@ input[type="number"] {
 .flight-contain .el-table td, .el-table th.is-leaf,
 .tasksched-contain .el-table td, .el-table th.is-leaf,
 .basic-resource-contain .el-table td, .el-table th.is-leaf,
+.basic-resource-contain .el-table td, .el-table th.gutter,
+.menu-status-dialog .el-table td, .el-table th.is-leaf,
+.menu-status-dialog .el-table td, .el-table th.gutter,
 .flight-gantt-bottom-container .el-table td, .el-table th.is-leaf {
-  border-bottom: none;
+  border-bottom: none !important;
 }
 /* ************************基础数据样式开始********************** */
 .basic-resource-contain .query-contain{
@@ -402,7 +410,8 @@ input[type="number"] {
   box-shadow: 0 0 10px rgba(50, 170, 255, 0.7) inset;
 }
 /* ************************航班/任务 查询框设置结束************************ */
-.query-contain .left-button>.el-button {
+.query-contain .left-button>.el-button,
+.query-contain .left-button>div {
   margin-left: 10px;
 }
 .query-contain .left-button>span:only-of-type {
@@ -430,12 +439,14 @@ input[type="number"] {
 .query-contain input {
   color: #fff;
 }
-.page-table-header {
+.page-table-header,
+.whole-table-header {
   height: 70px;
   width: calc(100% - 60px);
   padding: 0 30px 0 30px;
 }
-.page-table-title {
+.page-table-title,
+.whole-table-title {
   float: left;
   color: #7a939e;
   font-size: 14px;
@@ -478,6 +489,9 @@ input[type="number"] {
 /* *****航班列表header样式结束***** */
 .whole-contain tr div {
   float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .whole-contain th {
   height: 40px;
@@ -505,11 +519,11 @@ input[type="number"] {
 .div-right-table_body td {
   box-sizing: border-box;
 }
-.div-opr-table_body td {
+.whole-contain .div-opr-table_body td {
   padding: 9px 0 9px 0;
   height: 30px;
 }
-.div-opr-table_body tr {
+.whole-contain .div-opr-table_body tr {
   background: #0e3042;
 }
 /* **********tr/th/td相关高度宽度设置结束********** */
@@ -741,13 +755,15 @@ input[type="number"] {
 /* *********右侧滚动table样式结束******* */
 /* *********右侧冻结操作table开始******* */
 /* 表头->编辑表头 按钮样式 */
-.div-opr-table_header {
+.flight-table-main .div-opr-table_header,
+.tasksched-table-main .div-opr-table_header {
   padding: 5px 0 0 5px;
   display: flex;
   justify-content: center;
   margin-right: 13px;
 }
-.opr-header-button {
+.flight-table-main .opr-header-button,
+.tasksched-table-main .opr-header-button {
   height: 24px;
   line-height: 24px;
   width: 70px;
@@ -760,7 +776,8 @@ input[type="number"] {
   border-radius: 8px;
   cursor: pointer;
 }
-.opr-header-button:hover {
+.flight-table-main .opr-header-button:hover,
+.tasksched-table-main .opr-header-button:hover {
   opacity: 0.8;
 }
 /* 滚动条是否显示相关设置begin */
@@ -948,7 +965,7 @@ input[type="number"] {
   height: 35px;
   overflow: hidden;
 }
-.div-opr-table .div-opr-i {
+.whole-table-main .div-opr-table .div-opr-i {
   height: 100%;
 }
 .flight-table-container .div-opr-i>div {
@@ -1019,6 +1036,7 @@ input[type="number"] {
 .flight-contain .el-table .el-table__body,
 .tasksched-contain .el-table .el-table__body,
 .basic-resource-contain .el-table .el-table__body,
+.menu-status-dialog .el-table .el-table__body,
 .flight-gantt-bottom-container .el-table .el-table__body {
   color: #fff;
 }/* #091B29 */
@@ -1027,6 +1045,7 @@ input[type="number"] {
   background: #091B29 !important
 }
 .basic-resource-contain .el-table .el-table__header th,
+.menu-status-dialog .el-table .el-table__header th,
 .flight-gantt-bottom-container .el-table .el-table__header th {
   font-size: 14px;
   color: #7a939e;
@@ -1126,7 +1145,7 @@ input[type="number"] {
   line-height: 32px;
 }
 *:not(.el-select):not(.login-div-main)>.el-input-number:first-child>.el-input>.el-input__inner,
-*:not(.el-select):not(.login-div-main)>.el-input:first-child>.el-input__inner,
+*:not(.el-select):not(.login-div-main)>.el-input:not(.el-pagination__editor):first-child>.el-input__inner,
 .el-select>.el-input:first-child>.el-input__inner,
 .el-form-item:not(.auto-height) .el-textarea .el-textarea__inner {
   height: 32px !important;
@@ -1194,8 +1213,10 @@ input[type="number"] {
 .error-input>input {
   border-color: #e65069 !important;
 }
-.td-input-div .el-input__inner {
+.td-input-div div:not(.el-date-editor)>.el-input__inner {
   padding: 0 !important;
+}
+.td-input-div .el-input__inner {
   text-align: center;
   border-radius: 6px;
   background-color: rgba(0, 0, 0, 0.4) !important;
@@ -1429,13 +1450,17 @@ input[type="number"] {
   background-color: rgba(60,166,200,0.8);
   margin-right: 2.5px;
 }
-.el-select-dropdown li.selected,
-.el-select-dropdown li.hover {
+.el-select-dropdown__item.selected,
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover {
   color: #fff !important;
   background:rgba(60,166,200,0.4) !important;
 }
 .dialog-form-edit .el-date-editor.el-input {
   width: 100%;
+}
+.dialog-form-edit .el-date-editor.change-padding .el-input__inner {
+  padding: 15px;
 }
 .contextmenu-card .el-card__body {
   padding: 0 !important
@@ -1692,22 +1717,28 @@ div.el-upload {
   background-color: rgba(60, 166, 200, 0.4);
   color: #fff;
 }
-.el-popper:not(.editable-popper)[x-placement*=bottom] .popper__arrow {
+.el-popper:not(.editable-popper)[x-placement*=bottom] .popper__arrow,
+.el-tooltip__popper[x-placement*=bottom] .popper__arrow {
   border-bottom-color: rgba(60, 166, 200, 0.7) !important;
 }
-.el-popper:not(.editable-popper)[x-placement*=bottom] .popper__arrow::after  {
+.el-popper:not(.editable-popper)[x-placement*=bottom] .popper__arrow::after,
+.el-tooltip__popper:not(.editable-popper)[x-placement*=bottom] .popper__arrow::after  {
   border-bottom-color: rgba(8, 25, 38, 0.7) !important;
 }
-.el-popper[x-placement*=left] .popper__arrow {
+.el-popper[x-placement*=left] .popper__arrow,
+.el-tooltip__popper[x-placement*=left] .popper__arrow {
   border-left-color: rgba(60, 166, 200, 0.7) !important;
 }
-.el-popper[x-placement*=left] .popper__arrow::after  {
+.el-popper[x-placement*=left] .popper__arrow::after,
+.el-tooltip__popper[x-placement*=left] .popper__arrow::after  {
   border-left-color: rgba(8, 25, 38, 0.7) !important;
 }
-.el-popper[x-placement*=right] .popper__arrow {
+.el-popper[x-placement*=right] .popper__arrow,
+.el-tooltip__popper[x-placement*=right] .popper__arrow {
   border-right-color: rgba(60, 166, 200, 0.7) !important;
 }
-.el-popper[x-placement*=right] .popper__arrow::after  {
+.el-popper[x-placement*=right] .popper__arrow::after,
+.el-tooltip__popper[x-placement*=right] .popper__arrow::after  {
   border-right-color: rgba(8, 25, 38, 0.7) !important;
 }
 .el-popper[x-placement*=top] .popper__arrow,
@@ -1813,6 +1844,9 @@ div.el-upload {
 .other-dialog .dialog-body {
   text-align: center;
   overflow: hidden;
+}
+.prepop-dialog>.el-dialog {
+  height: 196px;
 }
 .dialog-delete-warn .dialog-body>div:first-of-type {
   width: 160px;

@@ -102,7 +102,7 @@ export default {
       //     })
       //   }
       // })
-      let pms = ['add', 'update', 'reset', 'cgPwd', 'detail', 'delete', 'upMq']
+      let pms = ['add', 'update', 'reset', 'cgPwd', 'detail', 'delete', 'upMq', 'upMqAll']
       _.forEach(pms, item => {
         this.permissions[item] = true
       })

@@ -10,7 +10,11 @@
     <el-main class="page-table-view">
       <div class="page-table-header">
         <div class="page-table-title">查询结果</div>
-        <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete"></Tool-button-view>
+        <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete">
+          <template slot="button-slot-scope">
+            <div v-if="permissions.upMq" class="tool-div-button tool-bind" title="数据同步" @click="handleUpdateMqByDb"></div>
+          </template>
+        </Tool-button-view>
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
@@ -53,10 +57,12 @@ export default {
         add: true,
         update: true,
         delete: true,
-        reset: true
+        reset: true,
+        upMq: true
       },
       // 基础路径
       baseUrl: '/manage/consumer',
+      upMqUrl: 'manage/consumer/updateMqByDb',
       formData: {
         title: '新增',
         visible: false,
@@ -278,6 +284,16 @@ export default {
       } else {
         this.formData.loading = false
       }
+    },
+    // 数据同步
+    handleUpdateMqByDb () {
+      postData(this.upMqUrl, {}).then(res => {
+        if (res.data.code == 0) {
+          this.showSuccess('数据同步')
+        } else {
+          this.showError('数据同步', '请联系管理员 !')
+        }
+      })
     }
   }
 }

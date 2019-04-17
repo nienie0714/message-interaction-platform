@@ -1,7 +1,7 @@
 <template>
   <div class="body-view">
     <el-container direction="vertical" ref="homeBodyViewContainer">
-      <div class="home-return-main-img" @click="returnMainPage()"></div>
+      <div class="home-return-main-img" title="退出登录" @click="returnMainPage()"></div>
       <header-view @select="handleHeaderMenu"></header-view>
       <el-main :class="((routerViewName!='航班查询')&&(routerViewName!='任务调度'))?'home-top-main':''">
         <el-container class="home-container-cent">
@@ -39,14 +39,7 @@ export default {
   },
   methods: {
     returnMainPage () {
-      if (window.opener && !window.opener.closed) {
-        const {href} = this.$router.resolve({
-          name: window.opener.name
-        })
-        window.open(href, window.opener.name)
-      } else {
-        this.$router.push({name: '主页面'})
-      }
+      this.$router.push('/')
     },
     handleHeaderMenu (data) {
       this.$router.push({name: data.key})
