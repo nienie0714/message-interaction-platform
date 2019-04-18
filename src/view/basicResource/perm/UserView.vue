@@ -20,7 +20,7 @@
         </template> -->
         <template slot="button-slot-scope" slot-scope="scopeData">
           <el-dropdown trigger="click" title="更多">
-            <div class="tool-div-button button-detail"></div>
+            <div class="tool-div-button button-reset"></div>
             <el-dropdown-menu slot="dropdown" class="morrow-button-dpd">
               <el-dropdown-item :divided="true" @click.native="handleReset(scopeData.data)">重置密码</el-dropdown-item>
               <el-dropdown-item :divided="true" @click.native="handlePwd(scopeData.data)">修改密码</el-dropdown-item>

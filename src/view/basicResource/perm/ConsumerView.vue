@@ -20,7 +20,7 @@
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
         <template slot="button-slot-scope" slot-scope="scopeData">
           <el-dropdown trigger="click" title="更多">
-            <div class="tool-div-button button-detail"></div>
+            <div class="tool-div-button button-reset"></div>
             <el-dropdown-menu slot="dropdown" class="morrow-button-dpd">
               <el-dropdown-item :divided="true" @click.native="handleReset(scopeData.data)">重置密码</el-dropdown-item>
               <el-dropdown-item :divided="true" @click.native="openSubscribeDia(scopeData.data)">绑定消息</el-dropdown-item>
