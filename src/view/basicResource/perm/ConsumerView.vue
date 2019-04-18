@@ -19,7 +19,7 @@
       </div>
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
         <template slot="button-slot-scope" slot-scope="scopeData">
-          <el-dropdown trigger="click">
+          <el-dropdown trigger="click" title="更多">
             <div class="tool-div-button button-detail"></div>
             <el-dropdown-menu slot="dropdown" class="morrow-button-dpd">
               <el-dropdown-item :divided="true" @click.native="handleReset(scopeData.data)">重置密码</el-dropdown-item>
@@ -408,6 +408,10 @@ export default {
             } else if (item.msgPubType == '2') {
               this.$set(item, 'msgPubTypeCn', '单播')
             }
+          })
+          getQueryAll(`manage/msgDefinition/bind/${this.subscribeData.data.consumerNo}`).then(res => {
+            this.subscribeData.multipleSelection = res.data.data
+            console.log(this.subscribeData.multipleSelection) // todo
           })
         } else {
           this.showError('获取消息类型列表', '请重新尝试 !')

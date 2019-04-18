@@ -30,12 +30,12 @@
         <span class="header-title">{{subscribeData.title}}</span>
       </div>
       <div class="dialog-body">
-        <div :style ="{display: 'flex','justify-content': 'center','margin-bottom': '23px'}">
+        <!-- <div :style ="{display: 'flex','justify-content': 'center','margin-bottom': '23px'}">
           <el-radio-group v-model="bindSelect" size="small" @change="changeBindSelect()">
             <el-radio-button label="binded">已绑定用户</el-radio-button>
             <el-radio-button label="binding">未绑定用户</el-radio-button>
           </el-radio-group>
-        </div>
+        </div> -->
         <div>
           <el-row :gutter="20">
             <el-col :span="4"><div>消息类型编号</div></el-col>
@@ -45,7 +45,7 @@
           </el-row>
         </div>
         <div>
-          <el-table height="370" ref="multipleTable" :data="subscribeData.tableData" stripe :highlight-current-row="true" align="center" style="width: 100%" @selection-change="handleSubSelectionChange">
+          <el-table height="430" ref="multipleTable" :data="subscribeData.tableData" stripe :highlight-current-row="true" align="center" style="width: 100%" @selection-change="handleSubSelectionChange">
             <el-table-column type="selection" fixed="left" align="center"></el-table-column>
             <el-table-column prop="consumerNo" label="用户名" align="center"></el-table-column>
             <el-table-column prop="expiryTime" label="过期时间" align="center"></el-table-column>
@@ -237,6 +237,10 @@ export default {
             } else if (item.isUseable == '') {
               this.$set(item, 'isUseableCn', '')
             }
+            getQueryAll('flight/dynamic/queryDynamicAircraftList').then(res => {
+              this.subscribeData.multipleSelection = res.data.data
+              console.log(this.subscribeData.multipleSelection) // todo
+            })
           })
         } else {
           this.showError('获取消费者列表', '请重新尝试 !')
@@ -267,16 +271,6 @@ export default {
           this.showError('订阅关系配置', '请重新尝试 !')
         }
       })
-    },
-    changeBindSelect () {
-      let url = ''
-      switch (this.bindSelect) {
-        case 'binded': url = 'flight/dynamic/queryDynamicAircraftList'
-        break
-        case 'binding': url = 'flight/hisDynamic/queryDynamicAircraftList'
-        break
-      }
-      console.log(this.bindSelect)
     }
     // handleSubscribe (row) {
     //   var data = []
