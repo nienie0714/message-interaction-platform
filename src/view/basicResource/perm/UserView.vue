@@ -14,12 +14,19 @@
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
-        <template slot="button-slot-scope" slot-scope="scopeData">
+        <!-- <template slot="button-slot-scope" slot-scope="scopeData">
           <div v-if="permissions.reset" class="tool-div-button button-reset" title="重置密码" @click="handleReset(scopeData.data)"></div>
           <div v-if="permissions.cgPwd" class="tool-div-button button-reset" title="修改密码" @click="handlePwd(scopeData.data)"></div>
-        </template>
-        <!-- <template slot="button-slot-scope" slot-scope="scopeData">
         </template> -->
+        <template slot="button-slot-scope" slot-scope="scopeData">
+          <el-dropdown trigger="click">
+            <div class="tool-div-button button-detail"></div>
+            <el-dropdown-menu slot="dropdown" class="morrow-button-dpd">
+              <el-dropdown-item :divided="true" @click.native="handleReset(scopeData.data)">重置密码</el-dropdown-item>
+              <el-dropdown-item :divided="true" @click.native="handlePwd(scopeData.data)">修改密码</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
       </Table-view>
     </el-main>
     <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit" @handleReset="saveReset" @handlePwd="savePassword"></Edit-view>

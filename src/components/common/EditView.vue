@@ -734,7 +734,7 @@ export default {
       }
     },
     handleSave () {
-      if (!['新增', '编辑', '重置密码', '修改密码'].includes(this.formData.title)) {
+      if (!['新增', '编辑', '重置密码', '修改密码', '克隆'].includes(this.formData.title)) {
         this.$emit('handleOther', this.editData)
       } else {
         let _that = this
@@ -805,6 +805,8 @@ export default {
                 this.$emit('handleReset', this.editData)
               } else if (this.formData.title == '修改密码') {
                 this.$emit('handlePwd', this.editData)
+              } else if (this.formData.title == '克隆') {
+                this.$emit('handleClone', this.editData)
               }
             }
           } else {

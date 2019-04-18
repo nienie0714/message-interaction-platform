@@ -88,7 +88,8 @@ export default {
     return {
       // 基础路径
       baseUrl: 'manage/msgDefinition',
-      upMqUrl: 'manage/consumer/updateMqByDb',
+      queryUrl: 'manage/msgDefinition/queryAll',
+      upMqUrl: 'manage/msgDefinition/updateMqByDb',
       // 查询条件每行个数
       colSize: 5,
       formData: {
@@ -135,7 +136,7 @@ export default {
           type: 'select',
           filterable: true,
           inputText: '消息类型',
-          getOptions: '/manage/msgDefinition/queryAll',
+          getOptions: 'manage/msgDefinition/type/msgType',
           optKey: 'msgType',
           optLabel: 'msgTypeCn',
           span: 3
@@ -146,7 +147,7 @@ export default {
           type: 'select',
           filterable: true,
           inputText: '消息子类型',
-          getOptions: '/manage/msgDefinition/queryAll',
+          getOptions: 'manage/msgDefinition/type/msgType',
           optKey: 'msgSubtype',
           optLabel: 'msgSubtypeCn',
           span: 3
@@ -193,15 +194,13 @@ export default {
         if (item.key == 'msgType') {
           getQueryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              let arr1 = _.unionBy(response.data.data, 'msgType')
-              this.$set(item, 'options', arr1)
+              this.$set(item, 'options', response.data.data)
             }
           })
         } else if (item.key == 'msgSubtype') {
           queryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              let arr2 = _.unionBy(response.data.data, 'msgSubtype')
-              this.$set(item, 'options', arr2)
+              this.$set(item, 'options', response.data.data)
             }
           })
         }
@@ -295,58 +294,3 @@ export default {
   }
 }
 </script>
-<style>
-.menu-status-dialog .el-radio-group {
-  width: 400px;
-}
-.menu-status-dialog>.el-dialog {
-  height: 600px;
-}
-.menu-status-dialog .el-dialog__body .el-form-item__content {
-    height: 100%;
-    min-height: 32px;
-    margin-bottom: 24px;
-}
-.menu-status-dialog .dialog-body .el-row {
-  text-align: left;
-  height: 40px;
-  line-height: 40px;
-  margin: 5px 0;
-  color: #7a939e;
-}
-.menu-status-dialog .el-form-item__content {
-  margin-left: 10px!important;
-}
-.menu-status-dialog .el-date-editor.el-input, .el-date-editor.el-input__inner {
-    width: 100%;
-}
-.menu-status-dialog .el-select {
-  width: 100%;
-}
-.menu-status-dialog .el-table__fixed-body-wrapper .el-table__row:not(.el-table__row--striped).hover-row td,
-.menu-status-dialog .el-table__fixed-body-wrapper .el-table__row:not(.el-table__row--striped).current-row td {
-  background: #215870 !important;
-}
-/* .menu-status-dialog .el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: none;
-}
-.menu-status-dialog .el-table__row--striped>.el-table-column--selection {
-  background-color: #081e2d !important;
-}
-.menu-status-dialog .el-table__fixed-body-wrapper .hover-row,
-.menu-status-dialog .el-table__fixed-body-wrapper .current-row, {
-  box-shadow: none;
-}
-.menu-status-dialog .el-table__body-wrapper .hover-row th,
-.menu-status-dialog .el-table__body-wrapper .hover-row td,
-.menu-status-dialog .el-table__body-wrapper .current-row th,
-.menu-status-dialog .el-table__body-wrapper .current-row td {
-  background: #215870 !important;/* rgba(60,166,200,0.4) !important;
-}
-.menu-status-dialog .el-table__fixed-body-wrapper .hover-row th,
-.menu-status-dialog .el-table__fixed-body-wrapper .hover-row td,
-.menu-status-dialog .el-table__fixed-body-wrapper .current-row th,
-.menu-status-dialog .el-table__fixed-body-wrapper .current-row td {
-  background: #215870 !important;
-} */
-</style>
