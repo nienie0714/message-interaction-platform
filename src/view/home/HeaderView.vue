@@ -9,7 +9,8 @@
         </el-submenu>
       </el-menu> -->
       <div class="logo-header">
-        <img :src="require('@img/logo_header.png')"/>
+        <!-- <img :src="require('@img/logo_header.png')"/> -->
+        消息交互平台
       </div>
     </el-header>
   </div>
@@ -34,9 +35,15 @@ export default {
 </script>
 
 <style>
-.logo-header {
+/* .logo-header {
   padding-left: 20px;
   padding-top: 15px;
+} */
+.logo-header {
+    padding-left: 20px;
+    padding-top: 15px;
+    color: #fff;
+    font-size: 36px;
 }
 /* .header-menu .el-header{
   background-color: none

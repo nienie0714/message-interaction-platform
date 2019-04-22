@@ -2,7 +2,8 @@
   <div class="login-page">
     <div class="login-header">
       <div class="logo-header">
-        <img :src="require('@img/logo_header.png')"/>
+        <!-- <img :src="require('@img/logo_header.png')"/> -->
+        消息交互平台
       </div>
     </div>
     <div class="login-main">
@@ -70,7 +71,7 @@ export default {
         queryAll(this.loginUrl, this.loginData).then(res => {
           if (res.data.code == 0) {
             localStorage.setItem('token', res.data.data.token ? res.data.data.token : '')
-            this.$router.push('/basicdata/perm/user')
+            this.$router.push('/basicdata/')
           } else if (res.data.code == -1) {
             this.showError('登录', '用户名或密码错误 !')
           } else {

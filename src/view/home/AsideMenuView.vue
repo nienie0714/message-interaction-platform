@@ -64,31 +64,39 @@ export default {
   },
   created () {
     this.$nextTick(() => {
-      if (this.$route.matched[0].path == '/basicdata') {
-        this.asideData = JSON.parse(localStorage.getItem('userResource'))
-      } else {
-        this.asideData = JSON.parse(localStorage.getItem('statResource'))
-      }
-      if (['/basicdata', '/statistics'].includes(this.$route.path)) {
-        this.findActiveIndex(this.asideData)
-        this.$router.push(this.activeIndex)
-      }
+      this.asideData = JSON.parse(localStorage.getItem('userResource'))
+      this.findActiveIndex(this.asideData)
+      this.$router.push(this.activeIndex)
+      // if (this.$route.matched[0].path == '/basicdata') {
+      //   this.asideData = JSON.parse(localStorage.getItem('userResource'))
+      // } else {
+      //   this.asideData = JSON.parse(localStorage.getItem('statResource'))
+      // }
+      // if (['/basicdata', '/statistics'].includes(this.$route.path)) {
+      //   this.findActiveIndex(this.asideData)
+      //   this.$router.push(this.activeIndex)
+      // }
     })
   },
   methods: {
     findActiveIndex (arr) {
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].hasOwnProperty('children') && (arr[i].children != null) && (arr[i].children.length > 0)) {
-          this.findActiveIndex(arr[i].children)
-          if (this.indexTime > 0) {
-            return
-          }
-        } else {
-          this.activeIndex = arr[i].attributes
-          this.indexTime = this.indexTime + 1
-          return
-        }
+      if (arr[0].hasOwnProperty('children') && (arr[0].children != null) && (arr[0].children.length > 0)) {
+        this.activeIndex = arr[0].children[0].attributes
       }
+      // this.indexTime = this.indexTime + 1
+      // for (let i = 0; i < arr.length; i++) {
+      //   console.log(arr[i].children)
+      //   if (arr[i].hasOwnProperty('children') && (arr[i].children != null) && (arr[i].children.length > 0)) {
+      //     this.findActiveIndex(arr[i].children)
+      //     if (this.indexTime > 0) {
+      //       return
+      //     }
+      //   } else {
+      //     this.activeIndex = arr[i].attributes
+      //     this.indexTime = this.indexTime + 1
+      //     return
+      //   }
+      // }
     },
     handleAsideHiddenButton () {
       if (this.asideHidden) {

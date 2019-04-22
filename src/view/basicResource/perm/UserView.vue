@@ -79,6 +79,7 @@ export default {
           {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
           {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true}
           // {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
+          // {key: 'resourceIds', label: '资源', type: 'tree', showCheckbox: true, class: 'auto-width', getOptions: '/manage/sysResource/allTree', itemKey: 'id', props: {label: 'text', children: 'children'}, isHidden: true}
         ],
         rules: {
           nickname: [
@@ -139,6 +140,20 @@ export default {
     }
   },
   methods: {
+    // 列表选中事件
+    tableChange (data) {
+      if (data.currentRow) {
+        for (let i = 0; i < this.formData.formData.length; i++) {
+          this.$set(this.formData.formData[i], 'value', data.currentRow[this.formData.formData[i].key])
+          if (this.formData.formData[i].key == 'resourceIds') {
+            let obj = {
+              'roleId': data.currentRow['roleId']
+            }
+            this.$set(this.formData.formData[i], 'optionsQuery', obj)
+          }
+        }
+      }
+    },
     // 新增
     handleAdd () {
       for (let i = 0; i < this.formData.formData.length; i++) {
@@ -149,7 +164,10 @@ export default {
         } else if (this.formData.formData[i].key == 'userName') {
           this.$set(this.formData.formData[i], 'type', 'input')
           this.$set(this.formData.formData[i], 'isHidden', false)
-        }
+        } else if (this.formData.formData[i].key == 'resourceIds') {
+            let data = {}
+            this.$set(this.formData.formData[i], 'optionsQuery', data)
+          }
       }
       this.formData.title = '新增'
       this.formData.visible = true
