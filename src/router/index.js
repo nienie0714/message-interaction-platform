@@ -85,7 +85,7 @@ var router = new Router({
             {
               path: 'consumer',
               name: '消费者',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/perm/ConsumerView'), 'ConsumerView'))
+              component: r => require.ensure([], () => r(require('@/view/basicResource/msg/ConsumerView'), 'ConsumerView'))
             },
             {
               path: 'msgBind',

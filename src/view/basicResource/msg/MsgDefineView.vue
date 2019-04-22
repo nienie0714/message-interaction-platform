@@ -180,7 +180,7 @@ export default {
         key: 'consumerNo',
         diaWidth: '800px',
         title: '订阅关系配置',
-        url: 'manage/consumer/rebind', // todo
+        url: 'manage/msgDefinition/rebind', // todo
         multipleSelection: [],
         tableData: [],
         data: {}
@@ -288,7 +288,7 @@ export default {
       this.subscribeData.multipleSelection = val
     },
     handleSubscribeConfirm () {
-      let consumerNos = this.subscribeData.multipleSelection.map(item => item.msgTypeId)
+      let consumerNos = this.subscribeData.multipleSelection.map(item => item.consumerNo)
       this.$set(this.subscribeData.data, 'consumerNos', consumerNos)
       this.subscribeData.loading = true
       postData(this.subscribeData.url, this.subscribeData.data).then(res => {
@@ -302,19 +302,6 @@ export default {
         }
       })
     }
-    // handleSubscribe (row) {
-    //   var data = []
-    //   let {taskNo, operationNo, ...rest} = row
-    //   data.push({taskNo, operationNo})
-    //   postData(this.defaultUrl, data).then(res => {
-    //     if (res.data.code == 0) {
-    //       this.showSuccess(`${row ? '' : '一键'}恢复默认`)
-    //       this.queryDataReq(1)
-    //     } else {
-    //       this.showError(`${row ? '' : '一键'}恢复默认`, '请联系管理员 !')
-    //     }
-    //   })
-    // }
   }
 }
 </script>

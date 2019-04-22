@@ -10,13 +10,12 @@
     <el-main class="page-table-view">
       <div class="page-table-header">
         <div class="page-table-title">查询结果</div>
-        <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete"></Tool-button-view>
+        <!-- <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete"></Tool-button-view> -->
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
-      <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
-      </Table-view>
+      <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable"></Table-view>
     </el-main>
-    <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit"></Edit-view>
+    <Edit-view :formData="formData"></Edit-view>
     <Warning-box-view :data="deleteData" @handleConfirm="handleDeleteConfirm" @handleClose="handleDeleteClose"></Warning-box-view>
   </el-container>
 </template>
@@ -47,13 +46,13 @@ export default {
     return {
       // 菜单对应按钮权限
       permissions: {
-        add: true,
-        update: true,
-        delete: true,
-        reset: true
+        add: false,
+        update: false,
+        delete: false,
+        reset: false
       },
       // 基础路径
-      baseUrl: '/sysLog',
+      baseUrl: 'manage/sysLog',
       formData: {
         title: '新增',
         visible: false,
@@ -95,7 +94,7 @@ export default {
           key: 'logType',
           value: '',
           type: 'input',
-          inputText: '用户名',
+          inputText: '日志类型',
           span: 4
         },
         {
@@ -103,9 +102,30 @@ export default {
           key: 'logUser',
           value: '',
           type: 'input',
-          inputText: '登录账号',
+          inputText: '操作用户',
           span: 4
         }
+        // , {
+        //   // 'p': '开始时间',
+        //   key: 'beginDate',
+        //   value: null,
+        //   type: 'date',
+        //   editable: false,
+        //   clearable: true,
+        //   inputText: '开始时间',
+        //   valueFormat: 'yyyy-MM-dd',
+        //   span: 3
+        // }, {
+        //   // 'p': '结束时间',
+        //   key: 'endDate',
+        //   value: null,
+        //   type: 'date',
+        //   editable: false,
+        //   clearable: true,
+        //   inputText: '结束时间',
+        //   valueFormat: 'yyyy-MM-dd',
+        //   span: 3
+        // }
       ],
       // 列表设置
       tableData: {
@@ -114,82 +134,27 @@ export default {
         stripe: true,
         height: window.innerHeight,
         type: 'selection',
+        isOperat: true,
         highlight: true,
         headerCellClass: 'tableHeaderCell-Center',
         rowClassName: this.tableRowClassName,
         key: 'logId',
         multipleSelection: [],
         fields: [
-          {prop: 'logId', label: '日志Id', fixed: true, hidden: true},
-          {prop: 'logType', label: '日志类型', fixed: true, hidden: false},
-          {prop: 'logUser', label: '操作用户', fixed: true, hidden: false},
-          {prop: 'logSession', label: '登录会话', fixed: true, hidden: false},
-          {prop: 'logTime', label: '日志时间', fixed: true, hidden: false},
-          {prop: 'logSource', label: '操作来源', fixed: true, hidden: false},
-          {prop: 'logSummary', label: '日志概述', fixed: true, hidden: false},
-          {prop: 'logDetail', label: '日志详细', fixed: true, hidden: false},
-          {prop: 'remark', label: '备注', fixed: true, hidden: false}
+          {prop: 'logId', label: '日志Id', hidden: true},
+          {prop: 'logUser', label: '操作用户', hidden: false},
+          {prop: 'logType', label: '日志类型', hidden: false},
+          // {prop: 'logSession', label: '登录会话', hidden: false},
+          // {prop: 'logSource', label: '操作来源', hidden: false},
+          {prop: 'logSummary', label: '日志概述', hidden: false},
+          {prop: 'logDetail', label: '日志详细', hidden: false},
+          {prop: 'logTime', label: '记录时间', hidden: false, formatter: this.formatterDayMin}
+          // {prop: 'remark', label: '备注', hidden: false}
         ]
       }
     }
   },
   methods: {
-    // 新增
-    handleAdd () {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', '')
-        this.$set(this.formData.formData[i], 'isHidden', false)
-        if (this.formData.formData[i].key == 'newPassword') {
-          this.formData.formData[i].isHidden = true
-        } else if (this.formData.formData[i].key == 'userName') {
-          this.$set(this.formData.formData[i], 'type', 'input')
-          this.$set(this.formData.formData[i], 'isHidden', false)
-        }
-      }
-      this.formData.title = '新增'
-      this.formData.visible = true
-    },
-    // 详情
-    handleDetail (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-        }
-      }
-      this.formData.title = '详情'
-      this.formData.visible = true
-    },
-    customSaveBefore (data) {
-      var obj = {}
-      if (this.formData.title == '编辑') {
-        obj = JSON.parse(JSON.stringify(data))
-        this.$delete(obj, 'password')
-        this.$delete(obj, 'newPassword')
-      }
-      if (this.formData.title == '新增') {
-        obj = JSON.parse(JSON.stringify(data))
-      }
-      return obj
-    },
-    // 编辑
-    handleEdit (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        } else if (this.formData.formData[i].key == 'userName') {
-          this.$set(this.formData.formData[i], 'type', 'pInput')
-          this.$set(this.formData.formData[i], 'isHidden', false)
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-        }
-      }
-      this.formData.title = '编辑'
-      this.formData.visible = true
-    }
   }
 }
 </script>

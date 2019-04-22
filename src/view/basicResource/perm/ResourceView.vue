@@ -58,7 +58,7 @@ export default {
           {key: 'icon', label: '资源图标', type: 'input', maxlength: 30},
           {key: 'resourceType', label: '资源类型', type: 'tabs', tabsKey: 'resourceType'},
           {key: 'status', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN'},
-          {key: 'pid', label: '父级资源', type: 'casc', class: 'auto-width', saveKey: 'pno', getOptions: '/manage/sysResource/allTree', props: {value: 'id', label: 'text', children: 'children'}}
+          {key: 'parentIds', label: '父级资源', type: 'casc', class: 'auto-width', saveKey: 'pno', getOptions: '/manage/sysResource/allTree', props: {value: 'id', label: 'text', children: 'children'}}
         ],
         rules: {
           name: [

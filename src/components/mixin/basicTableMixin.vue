@@ -438,7 +438,8 @@ export default {
     },
     // 格式化 YYYY-MM-DD HH:MM
     formatterDayMin (row, column) {
-      return row[column.property] ? row[column.property].substr(0, 16) : ''
+      let arr = row[column.property].substr(0, 16).split('T')
+      return arr.join(' ')
     },
     // 格式化 YYYY-MM-DD
     formatterDay (row, column) {

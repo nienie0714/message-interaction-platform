@@ -13,7 +13,10 @@ export default {
   },
   mounted () {
     var _this = this
-    this.timer = setInterval(this.refrushNowTime, this.intervalTime)
+    getQueryAll('/').then(res => {
+      _this.newTime = new Date(res.headers.date)
+      _this.timer = setInterval(this.refrushNowTime, this.intervalTime)
+    })
   },
   methods: {
     // 定时器实时刷新当前时间
