@@ -44,21 +44,21 @@ export default {
   data () {
     return {
       // 基础路径
-      baseUrl: 'sys/resource',
+      baseUrl: 'manage/sysResource',
       formData: {
         title: '新增',
         visible: false,
         inline: true,
         className: 'twiceCol',
+        key: 'resourceNo',
         formData: [
-          {key: 'resourceId', label: '资源名称', type: 'input', isHidden: true},
+          {key: 'resourceNo', label: '资源No', type: 'input', isHidden: true},
           {key: 'name', label: '资源名称', type: 'input', maxlength: 20},
-          {key: 'resourceType', label: '资源类型', type: 'tabs', tabsKey: 'resourceType'},
           {key: 'url', label: '资源连接地址', type: 'input', maxlength: 200},
           {key: 'icon', label: '资源图标', type: 'input', maxlength: 30},
+          {key: 'resourceType', label: '资源类型', type: 'tabs', tabsKey: 'resourceType'},
           {key: 'status', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN'},
-          {key: 'sortkey', label: '排序码', type: 'input', maxlength: 3},
-          {key: 'parentIds', label: '父级资源', type: 'casc', class: 'auto-width', saveKey: 'pid', getOptions: '/sys/resource/queryAllTree', props: {value: 'id', label: 'text', children: 'children'}}
+          {key: 'pid', label: '父级资源', type: 'casc', class: 'auto-width', saveKey: 'pno', getOptions: '/manage/sysResource/allTree', props: {value: 'id', label: 'text', children: 'children'}}
         ],
         rules: {
           name: [
@@ -104,15 +104,16 @@ export default {
         highlight: true,
         headerCellClass: 'tableHeaderCell-Center',
         rowClassName: this.tableRowClassName,
-        key: 'resourceId',
+        key: 'resourceNo',
         multipleSelection: [],
         fields: [
-          {prop: 'name', label: '资源名称', fixed: true, hidden: false},
+          {prop: 'resourceNo', label: '资源No', fixed: true, hidden: true},
+          {prop: 'name', label: '资源名称', fixed: false, hidden: false},
           {prop: 'url', label: '资源连接地址', fixed: false, hidden: false},
           {prop: 'icon', label: '资源图标', fixed: false, hidden: false},
           {prop: 'resourceType', label: '资源类型', fixed: false, hidden: false, optionKey: 'resourceType'},
           {prop: 'status', label: '是否启用', fixed: false, hidden: false, optionKey: 'isYOrN'},
-          {prop: 'parentName', label: '父级资源', fixed: false, hidden: false, overflow: true}
+          {prop: 'pno', label: '父级资源', fixed: false, hidden: false, overflow: true}
         ]
       }
     }

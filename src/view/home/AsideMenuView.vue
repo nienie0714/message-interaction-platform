@@ -2,17 +2,6 @@
   <div>
     <el-aside :class="asideHidden?'hidden-aside':'whole-aside'">
       <div style="height: 100%;">
-        <!-- <el-menu class="aside-el-menu" router :default-active="$route.path" unique-opened>
-          <template v-for="item in $router.options.routes[0].children" v-if="!item.hidden">
-            <el-submenu :index="item.path" :key="item.path" v-if="item.children && item.children.length>0">
-              用el ui 的title进行solt分发菜单
-              <template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-                item.name和item.children.name来配置菜单栏和子菜单栏的名称
-              <el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden">{{child.name}}</el-menu-item>
-            </el-submenu>
-            <el-menu-item v-if="!item.children" :key="item.path" :index="item.path"><i :class="item.iconCls"></i>{{item.name}}</el-menu-item>
-          </template>
-        </el-menu> -->
         <el-input v-show="!asideHidden" placeholder="搜索功能模块" v-model.trim="filterName" clearable @keyup.enter.native="filterMethod"><!--  suffix-icon="el-icon-search" -->
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
@@ -30,6 +19,20 @@
             <el-menu-item v-else-if="aside.children == null && (!aside.hidden)" :index="aside.attributes">{{ aside.text }}</el-menu-item>
           </div>
         </el-menu>
+        <!-- <el-menu class="aside-el-menu" router :default-active="$route.path" unique-opened @select="handleSelect" :collapse="asideHidden" :collapse-transition="false">
+          <div v-for="aside in asideData" :key="aside.attributes">
+            <el-submenu v-if="aside.children != null && aside.children != [] && (!aside.hidden)" :index="aside.attributes">
+              <template slot="title">
+                <div :class="aside.iconCls?(aside.iconCls+' menu-icon'):'menu-icon'"></div>
+                <span slot="title">{{ aside.text }}</span>
+              </template>
+              <div v-for="child in aside.children" :key="child.attributes">
+                <el-menu-item v-if="!child.hidden" :index="child.attributes">{{ child.text }}</el-menu-item>
+              </div>
+            </el-submenu>
+            <el-menu-item v-else-if="aside.children == null && (!aside.hidden)" :index="aside.attributes">{{ aside.text }}</el-menu-item>
+          </div>
+        </el-menu> -->
         <div :class="asideHidden?'aside-hidden-img ishidden':'aside-hidden-img'" @click="handleAsideHiddenButton"></div>
       </div>
     </el-aside>

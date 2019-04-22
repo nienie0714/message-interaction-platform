@@ -101,7 +101,7 @@
 <script>
 import DateRangePicker from './DateRangePicker'
 import basicMsgMixin from '../mixin/basicMsgMixin'
-import {queryAll, dfsPost, postData} from '../../api/base.js'
+import {queryAll, dfsPost, postData, getQueryAll} from '../../api/base.js'
 import _ from 'lodash'
 
 export default {
@@ -549,7 +549,7 @@ export default {
             if (item.hasOwnProperty('optionsQuery')) {
               data = item.optionsQuery
             }
-            queryAll(item.getOptions, data).then(response => {
+            getQueryAll(item.getOptions).then(response => {
               if (response.data.code == 0) {
                 if (item.type == 'tree' || item.type == 'trans') {
                   if (item.selectButton) {
@@ -768,7 +768,7 @@ export default {
                 } else if (this.formData.formData[i].type == 'casc') {
                   if (this.formData.formData[i].hasOwnProperty('saveKey')) {
                     let arr = this.editData[this.formData.formData[i].key]
-                    this.editData[this.formData.formData[i].saveKey] = arr[arr.length - 1]
+                    this.editData[this.formData.formData[i].saveKey] = arr[arr.length - 1] || null
                     this.$delete(this.editData, this.formData.formData[i].key)
                   }
                 } else if (this.formData.formData[i].type == 'select' && this.formData.formData[i].multiple) {

@@ -88,8 +88,7 @@ export default {
     return {
       // 基础路径
       baseUrl: 'manage/msgDefinition',
-      queryUrl: 'manage/msgDefinition/queryAll',
-      upMqUrl: 'manage/msgDefinition/updateMqByDb',
+      upMqUrl: 'manage/consumer/updateMqByDb',
       // 查询条件每行个数
       colSize: 5,
       formData: {
@@ -147,7 +146,7 @@ export default {
           type: 'select',
           filterable: true,
           inputText: '消息子类型',
-          getOptions: 'manage/msgDefinition/type/msgType',
+          getOptions: 'manage/msgDefinition/type/msgSubtype',
           optKey: 'msgSubtype',
           optLabel: 'msgSubtypeCn',
           span: 3
@@ -166,8 +165,8 @@ export default {
         key: 'msgTypeId',
         multipleSelection: [],
         fields: [
-          {prop: 'msgTypeId', label: '消息类型Id', fixed: true, hidden: true},
-          {prop: 'msgType', label: '消息类型编号', fixed: true, hidden: false},
+          {prop: 'msgTypeId', label: '消息类型Id', fixed: false, hidden: true},
+          {prop: 'msgType', label: '消息类型编号', fixed: false, hidden: false},
           {prop: 'msgTypeCn', label: '消息类型名称', fixed: false, hidden: false},
           {prop: 'msgSubtype', label: '消息子类型编号', fixed: false, hidden: false},
           {prop: 'msgSubtypeCn', label: '消息子类型名称', fixed: false, hidden: false},
@@ -178,9 +177,10 @@ export default {
       subscribeData: {
         loading: false,
         visible: false,
+        key: 'consumerNo',
         diaWidth: '800px',
         title: '订阅关系配置',
-        url: '', // todo
+        url: 'manage/consumer/rebind', // todo
         multipleSelection: [],
         tableData: [],
         data: {}
@@ -194,13 +194,29 @@ export default {
         if (item.key == 'msgType') {
           getQueryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              this.$set(item, 'options', response.data.data)
+              let b = []
+              _.forEach(response.data.data, item => {
+                if (_.findIndex(b, function (o) {
+                  return o.msgType == item.msgType
+                }) == -1) {
+                  b.push(item)
+                }
+              })
+              this.$set(item, 'options', b)
             }
           })
         } else if (item.key == 'msgSubtype') {
           queryAll(item.getOptions).then(response => {
             if (response.data.code == 0) {
-              this.$set(item, 'options', response.data.data)
+              let b = []
+              _.forEach(response.data.data, item => {
+                if (_.findIndex(b, function (o) {
+                  return o.msgSubtype == item.msgSubtype
+                }) == -1) {
+                  b.push(item)
+                }
+              })
+              this.$set(item, 'options', b)
             }
           })
         }
@@ -218,6 +234,7 @@ export default {
     },
     openSubscribeDia (row) {
       this.subscribeData.data.msgType = row.msgType
+      this.subscribeData.data.msgTypeId = row.msgTypeId
       this.subscribeData.data.msgSubtype = row.msgSubtype
       getQueryAll('manage/consumer/queryAll').then(res => {
         if (res.data.code == 0) {
@@ -237,16 +254,27 @@ export default {
             } else if (item.isUseable == '') {
               this.$set(item, 'isUseableCn', '')
             }
-            getQueryAll('flight/dynamic/queryDynamicAircraftList').then(res => {
-              this.subscribeData.multipleSelection = res.data.data
-              console.log(this.subscribeData.multipleSelection) // todo
-            })
           })
+          getQueryAll(`/manage/consumer/subscribe/${this.subscribeData.data.msgTypeId}`).then(res => {
+            if (res.data.code == 0) {
+                res.data.data.forEach(row => {
+                  let obj = _.find(this.subscribeData.tableData, [this.subscribeData.key, row[this.subscribeData.key]])
+                  this.subscribeData.multipleSelection.push(obj)
+                })
+              }
+            }).then(res => {
+              this.checked()
+            })
         } else {
           this.showError('获取消费者列表', '请重新尝试 !')
         }
       })
       this.subscribeData.visible = true
+    },
+    checked () {
+      this.subscribeData.multipleSelection.filter(item => {
+        this.$refs.multipleTable.toggleRowSelection(item, true)
+      })
     },
     closeSubscribeDialog () {
       this.subscribeData.loading = false
@@ -260,6 +288,8 @@ export default {
       this.subscribeData.multipleSelection = val
     },
     handleSubscribeConfirm () {
+      let consumerNos = this.subscribeData.multipleSelection.map(item => item.msgTypeId)
+      this.$set(this.subscribeData.data, 'consumerNos', consumerNos)
       this.subscribeData.loading = true
       postData(this.subscribeData.url, this.subscribeData.data).then(res => {
         if (res.data.code == 0) {

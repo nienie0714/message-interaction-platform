@@ -30,6 +30,7 @@
         </template>
       </Table-view>
     </el-main>
+    <!-- openDetailDia -->
     <Edit-view :formData="formData" @handleAdd="openAddDia" @handleEdit="saveEdit" @handleReset="saveReset" @handleClone="saveClone"></Edit-view>
     <el-dialog  :visible.sync="subscribeData.visible" :close-on-click-modal="false" width="850px" append-to-body class='other-dialog menu-status-dialog' @close="closeSubscribeDialog">
       <div slot="title" class="dialog-header">
@@ -52,9 +53,9 @@
           </el-row>
         </div>
         <div>
-          <el-table height="430" ref="multipleTable" :data="subscribeData.tableData" stripe :highlight-current-row="true" align="center" style="width: 100%" @selection-change="handleSubSelectionChange">
-            <el-table-column type="selection" fixed="left" align="center"></el-table-column>
-            <el-table-column prop="msgType" label="消息类型编号" align="center"></el-table-column>
+          <el-table height="430" ref="multipleTable" :data="subscribeData.tableData" stripe :highlight-current-row="true" :row-key="subscribeData.key" align="center" style="width: 100%" @selection-change="handleSubSelectionChange">
+            <el-table-column type="selection" align="center" v-if="subscribeData.title == '绑定消息'"></el-table-column>
+            <el-table-column prop="msgType" fixed="left" label="消息类型编号" align="center"></el-table-column>
             <el-table-column prop="msgTypeCn" label="消息类型名称" align="center"></el-table-column>
             <el-table-column prop="msgSubtype" label="消息子类型编号" align="center"></el-table-column>
             <el-table-column prop="msgSubtypeCn" label="消息子类型名称" align="center"></el-table-column>
@@ -65,7 +66,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeSubscribeDialog">关 闭</el-button>
-        <el-button type="primary" :loading="subscribeData.loading" @click="handleSaveAndBind()">确 定</el-button>
+        <el-button type="primary" :loading="subscribeData.loading" @click="handleSaveAndBind()" v-if="subscribeData.title == '绑定消息'">确 定</el-button>
       </div>
     </el-dialog>
     <Warning-box-view :data="deleteData" @handleConfirm="handleDeleteConfirm" @handleClose="handleDeleteClose"></Warning-box-view>
@@ -82,6 +83,7 @@ import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
 import {passwordReg, passwordReg418, consumerReg} from '../../../util/rules.js'
 import {postData, getQueryAll} from '../../../api/base.js'
+import _ from 'lodash'
 
 // const tableHeight = ''
 
@@ -207,6 +209,7 @@ export default {
       subscribeData: {
         loading: false,
         visible: false,
+        key: 'msgTypeId',
         diaWidth: '800px',
         title: '绑定消息',
         url: 'manage/consumer/bind', // todo
@@ -249,16 +252,17 @@ export default {
     },
     // 详情
     handleDetail (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'consumerPwd' || this.formData.formData[i].key == 'confirmPassword') {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', false)
+      this.subscribeData.title = '详情'
+      this.subscribeData.visible = true
+      this.subscribeData.data.consumerNo = row.consumerNo
+      this.subscribeData.data.expiryTime = row.expiryTime
+      getQueryAll(`manage/msgDefinition/bind/${this.subscribeData.data.consumerNo}`).then(res => {
+        if (res.data.code == 0) {
+          this.subscribeData.tableData = res.data.data
         }
-      }
-      this.formData.title = '详情'
-      this.formData.visible = true
+      }).then(res => {
+        this.checked()
+      })
     },
     customSaveBefore (data) {
       var obj = {}
@@ -410,8 +414,14 @@ export default {
             }
           })
           getQueryAll(`manage/msgDefinition/bind/${this.subscribeData.data.consumerNo}`).then(res => {
-            this.subscribeData.multipleSelection = res.data.data
-            console.log(this.subscribeData.multipleSelection) // todo
+            if (res.data.code == 0) {
+              res.data.data.forEach(row => {
+                let obj = _.find(this.subscribeData.tableData, [this.subscribeData.key, row[this.subscribeData.key]])
+                this.subscribeData.multipleSelection.push(obj)
+              })
+            }
+          }).then(res => {
+            this.checked()
           })
         } else {
           this.showError('获取消息类型列表', '请重新尝试 !')
@@ -419,7 +429,13 @@ export default {
       })
       this.subscribeData.visible = true
     },
+    checked () {
+      this.subscribeData.multipleSelection.filter(item => {
+        this.$refs.multipleTable.toggleRowSelection(item, true)
+      })
+    },
     closeSubscribeDialog () {
+      this.subscribeData.title = '绑定消息'
       if (this.formData.visible) {
         this.formData.loading = false
       } else {

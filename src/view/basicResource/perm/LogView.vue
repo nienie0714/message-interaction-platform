@@ -14,22 +14,9 @@
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
       <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
-        <!-- <template slot="button-slot-scope" slot-scope="scopeData">
-          <div v-if="permissions.reset" class="tool-div-button button-reset" title="重置密码" @click="handleReset(scopeData.data)"></div>
-          <div v-if="permissions.cgPwd" class="tool-div-button button-reset" title="修改密码" @click="handlePwd(scopeData.data)"></div>
-        </template> -->
-        <template slot="button-slot-scope" slot-scope="scopeData">
-          <el-dropdown trigger="click" title="更多">
-            <div class="tool-div-button button-reset"></div>
-            <el-dropdown-menu slot="dropdown" class="morrow-button-dpd">
-              <el-dropdown-item :divided="true" @click.native="handleReset(scopeData.data)">重置密码</el-dropdown-item>
-              <el-dropdown-item :divided="true" @click.native="handlePwd(scopeData.data)">修改密码</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
       </Table-view>
     </el-main>
-    <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit" @handleReset="saveReset" @handlePwd="savePassword"></Edit-view>
+    <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit"></Edit-view>
     <Warning-box-view :data="deleteData" @handleConfirm="handleDeleteConfirm" @handleClose="handleDeleteClose"></Warning-box-view>
   </el-container>
 </template>
@@ -66,34 +53,36 @@ export default {
         reset: true
       },
       // 基础路径
-      baseUrl: '/manage/sysUser',
+      baseUrl: '/sysLog',
       formData: {
         title: '新增',
         visible: false,
         inline: true,
         className: 'twiceCol',
-        key: 'userName',
+        key: 'logId',
         formData: [
-          {key: 'userName', label: '登录账号', type: 'input', maxlength: 100},
-          {key: 'nickname', label: '用户名', type: 'input', maxlength: 50},
-          {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
-          {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true}
-          // {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
+          {key: 'logId', label: '日志Id', type: 'input', isHidden: true, maxlength: 50},
+          {key: 'logType', label: '日志类型', type: 'input', maxlength: 50},
+          {key: 'logUser', label: '操作用户', type: 'input', maxlength: 50},
+          {key: 'logSession', label: '登录会话', type: 'input', maxlength: 100},
+          {key: 'logTime', label: '日志时间', type: 'input'},
+          {key: 'logSource', label: '操作来源', type: 'input', maxlength: 100}, // 操作系统名称或客户端地址等
+          {key: 'logSummary', label: '日志概述', type: 'input', maxlength: 100},
+          {key: 'logDetail', label: '日志详细', type: 'input', maxlength: 500},
+          {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
         ],
         rules: {
-          nickname: [
+          logType: [
             {required: true, message: '必填项', trigger: 'blur'}
           ],
-          userName: [
+          logUser: [
             {required: true, message: '必填项', trigger: 'blur'}
           ],
-          password: [
-            {required: true, message: '必填项', trigger: 'blur'},
-            {validator: passwordReg418, trigger: 'blur'}
+          logTime: [
+            {required: true, message: '必填项', trigger: 'blur'}
           ],
-          newPassword: [
-            {required: true, message: '必填项', trigger: 'blur'},
-            {validator: passwordReg418, trigger: 'blur'}
+          logSummary: [
+            {required: true, message: '必填项', trigger: 'blur'}
           ]
         }
       },
@@ -103,7 +92,7 @@ export default {
       queryList: [
         {
           // 'p': '用户名',
-          key: 'nickname',
+          key: 'logType',
           value: '',
           type: 'input',
           inputText: '用户名',
@@ -111,7 +100,7 @@ export default {
         },
         {
           // 'p': '用户名',
-          key: 'userName',
+          key: 'logUser',
           value: '',
           type: 'input',
           inputText: '登录账号',
@@ -128,12 +117,18 @@ export default {
         highlight: true,
         headerCellClass: 'tableHeaderCell-Center',
         rowClassName: this.tableRowClassName,
-        key: 'userName',
+        key: 'logId',
         multipleSelection: [],
         fields: [
-          {prop: 'nickname', label: '用户名', hidden: false},
-          {prop: 'userName', label: '登录账号', hidden: false},
-          {prop: 'password', label: '密码', hidden: true}
+          {prop: 'logId', label: '日志Id', fixed: true, hidden: true},
+          {prop: 'logType', label: '日志类型', fixed: true, hidden: false},
+          {prop: 'logUser', label: '操作用户', fixed: true, hidden: false},
+          {prop: 'logSession', label: '登录会话', fixed: true, hidden: false},
+          {prop: 'logTime', label: '日志时间', fixed: true, hidden: false},
+          {prop: 'logSource', label: '操作来源', fixed: true, hidden: false},
+          {prop: 'logSummary', label: '日志概述', fixed: true, hidden: false},
+          {prop: 'logDetail', label: '日志详细', fixed: true, hidden: false},
+          {prop: 'remark', label: '备注', fixed: true, hidden: false}
         ]
       }
     }
@@ -194,79 +189,7 @@ export default {
       }
       this.formData.title = '编辑'
       this.formData.visible = true
-    },
-    // 重置
-    handleReset (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password') {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-          this.$set(this.formData.formData[i], 'value', '')
-        } else if (this.formData.formData[i].key == 'userName') {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-          this.$set(this.formData.formData[i], 'type', 'pInput')
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        }
-      }
-      this.formData.title = '重置密码'
-      this.formData.visible = true
-    },
-    // 发送重置密码请求
-    saveReset (data) {
-      postData(this.resetUrl, data).then(response => {
-        if (response.data.code == 0) {
-          this.formData.visible = false
-          this.showSuccess('密码重置')
-          this.customMethod()
-          this.queryDataReq(1)
-        }
-        this.formData.loading = false
-      })
-    },
-    // 修改密码
-    handlePwd (row) {
-      for (let i = 0; i < this.formData.formData.length; i++) {
-        this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
-        if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
-          this.$set(this.formData.formData[i], 'isHidden', false)
-          this.$set(this.formData.formData[i], 'value', '')
-        } else {
-          this.$set(this.formData.formData[i], 'isHidden', true)
-        }
-      }
-      this.formData.title = '修改密码'
-      this.formData.visible = true
-    },
-    // 发送修改密码请求
-    savePassword (data) {
-      postData(this.pwUrl, data).then(response => {
-        if (response.data.code == 0) {
-          this.formData.visible = false
-          this.showSuccess('密码修改')
-          this.customMethod()
-          this.queryDataReq(1)
-        } else if (response.data.code == -1) {
-            this.showError('修改密码', response.data.msg)
-        }
-        this.formData.loading = false
-      })
     }
   }
 }
 </script>
-<style>
-.menu-status-dialog>.el-dialog {
-  height: 600px;
-}
-.morrow-button-dpd>li:first-of-type {
-  border-top: 0;
-}
-.morrow-button-dpd .el-dropdown-menu__item--divided {
-  margin-top: 0;
-  border-top: 1px solid rgba(60, 166, 200, 0.3);
-}
-.morrow-button-dpd .el-dropdown-menu__item--divided:before {
-  height: 0 !important;
-}
-</style>

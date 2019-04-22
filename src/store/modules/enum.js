@@ -26,9 +26,8 @@ export default {
       {key: 'resourceType',
       classify: '功能资源',
       options: [
-        {code: 1, name: '顶部菜单'},
-        {code: 2, name: '菜单'},
-        {code: 3, name: '按钮'}
+        {code: '0', name: '菜单'},
+        {code: '1', name: '按钮'}
       ]},
       {key: 'inOutType',
       classify: '进出港类型',
