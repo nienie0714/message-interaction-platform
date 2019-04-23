@@ -54,6 +54,7 @@ export default {
   },
   mounted () {
     localStorage.setItem('token', '')
+    localStorage.setItem('indexTime', '')
     window.name = this.$route.name
   },
   methods: {
@@ -98,6 +99,8 @@ export default {
 .login-header {
   text-align: left;
   padding: 40px 0 0 50px;
+  color: #fff;
+  font-size: 36px;
 }
 .login-main {
   display: flex;

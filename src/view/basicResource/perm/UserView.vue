@@ -77,9 +77,9 @@ export default {
           {key: 'userName', label: '登录账号', type: 'input', maxlength: 100},
           {key: 'nickname', label: '用户名', type: 'input', maxlength: 50},
           {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
-          {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true}
+          {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true},
           // {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
-          // {key: 'resourceIds', label: '资源', type: 'tree', showCheckbox: true, class: 'auto-width', getOptions: '/manage/sysResource/allTree', itemKey: 'id', props: {label: 'text', children: 'children'}, isHidden: true}
+          {key: 'resourceIds', label: '资源', type: 'tree', showCheckbox: true, class: 'auto-width', getOptions: `/manage/sysResource/queryAllSelected`, itemKey: 'id', props: {label: 'text', children: 'children'}, isHidden: true}
         ],
         rules: {
           nickname: [
@@ -147,7 +147,7 @@ export default {
           this.$set(this.formData.formData[i], 'value', data.currentRow[this.formData.formData[i].key])
           if (this.formData.formData[i].key == 'resourceIds') {
             let obj = {
-              'roleId': data.currentRow['roleId']
+              'userName': data.currentRow['userName']
             }
             this.$set(this.formData.formData[i], 'optionsQuery', obj)
           }
@@ -165,8 +165,7 @@ export default {
           this.$set(this.formData.formData[i], 'type', 'input')
           this.$set(this.formData.formData[i], 'isHidden', false)
         } else if (this.formData.formData[i].key == 'resourceIds') {
-            let data = {}
-            this.$set(this.formData.formData[i], 'optionsQuery', data)
+            this.$set(this.formData.formData[i], 'optionsQuery', null)
           }
       }
       this.formData.title = '新增'
@@ -205,6 +204,10 @@ export default {
           this.$set(this.formData.formData[i], 'isHidden', true)
         } else if (this.formData.formData[i].key == 'userName') {
           this.$set(this.formData.formData[i], 'type', 'pInput')
+          this.$set(this.formData.formData[i], 'isHidden', false)
+        } else if (this.formData.formData[i].key == 'resourceIds') {
+          let data = row.userName
+          this.$set(this.formData.formData[i], 'optionsQuery', data)
           this.$set(this.formData.formData[i], 'isHidden', false)
         } else {
           this.$set(this.formData.formData[i], 'isHidden', false)

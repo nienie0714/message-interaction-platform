@@ -45,28 +45,18 @@ var router = new Router({
           component: Basic,
           children: [
             {
-              path: 'classify',
-              name: '分类信息',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/perm/ClassifyView'), 'ClassifyView'))
-            },
-            {
               path: 'user',
-              name: '用户',
+              name: '用户管理',
               component: r => require.ensure([], () => r(require('@/view/basicResource/perm/UserView'), 'UserView'))
             },
             {
               path: 'log',
-              name: '日志查询',
+              name: '系统日志',
               component: r => require.ensure([], () => r(require('@/view/basicResource/perm/LogView'), 'LogView'))
             },
             {
-              path: 'role',
-              name: '角色',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/perm/RoleView'), 'RoleView'))
-            },
-            {
               path: 'resource',
-              name: '资源',
+              name: '系统资源',
               component: r => require.ensure([], () => r(require('@/view/basicResource/perm/ResourceView'), 'ResourceView'))
             }
           ]
@@ -84,32 +74,8 @@ var router = new Router({
             },
             {
               path: 'consumer',
-              name: '消费者',
+              name: '消费者管理',
               component: r => require.ensure([], () => r(require('@/view/basicResource/msg/ConsumerView'), 'ConsumerView'))
-            },
-            {
-              path: 'msgBind',
-              name: '消息绑定',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/msg/MsgBindView'), 'MsgBindView')),
-              props: true
-            },
-            {
-              path: 'msgQuery',
-              name: '消息记录',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/msg/MsgQueryView'), 'MsgQueryView')),
-              props: true
-            },
-            {
-              path: 'noticeTopic',
-              name: '通告主题',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/msg/NoticeTopicView'), 'NoticeTopicView')),
-              props: true
-            },
-            {
-              path: 'alarmWarning',
-              name: '预警设置',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/msg/AlarmWarningView'), 'AlarmWarningView')),
-              props: true
             }
           ]
         }

@@ -64,19 +64,39 @@ export default {
   },
   created () {
     this.$nextTick(() => {
+      // localStorage.getItem('basicdataName')
       this.asideData = JSON.parse(localStorage.getItem('userResource'))
       this.findActiveIndex(this.asideData)
-      this.$router.push(this.activeIndex)
-      // if (this.$route.matched[0].path == '/basicdata') {
-      //   this.asideData = JSON.parse(localStorage.getItem('userResource'))
-      // } else {
-      //   this.asideData = JSON.parse(localStorage.getItem('statResource'))
-      // }
-      // if (['/basicdata', '/statistics'].includes(this.$route.path)) {
-      //   this.findActiveIndex(this.asideData)
-      //   this.$router.push(this.activeIndex)
-      // }
+      if (localStorage.getItem('indexTime') != 1) {
+        this.$router.push(this.activeIndex)
+        localStorage.setItem('indexTime', 1)
+      } else {
+        this.$router.push({name: localStorage.getItem('basicdataName')})
+      }
     })
+    // this.homeRouterData = this.$store.getters.getHomeRouterData
+    // this.$nextTick(() => {
+    //   _.forEach(this.homeRouterData, (item) => {
+    //     if (this.$route.matched[0].path == item.path) {
+    //       this.asideData = JSON.parse(localStorage.getItem(item.loc))
+    //     }
+    //   })
+    //   if (_.map(this.homeRouterData, 'path').includes(this.$route.matched[0].path)) {
+    //     _.forEach(this.homeRouterData, (item) => {
+    //       if (this.$route.matched[0].path == item.path) {
+    //         let name = localStorage.getItem(item.routerName)
+    //         if (name) {
+    //           this.$router.push({name: name})
+    //         } else {
+    //           this.findActiveIndex(this.asideData)
+    //           this.$router.push(this.activeIndex)
+    //           localStorage.setItem(item.name, this.activeName)
+    //           localStorage.setItem(item.routerName, this.$route.name)
+    //         }
+    //       }
+    //     })
+    //   }
+    // })
   },
   methods: {
     findActiveIndex (arr) {

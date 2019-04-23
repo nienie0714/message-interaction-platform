@@ -534,8 +534,8 @@ export default {
           } else {
             this.$set(this.editData, item.key, item.value)
           }
-          if (item.hasOwnProperty('getOptions')) {
-            var data = {}
+          if (item.isHidden != true && item.hasOwnProperty('getOptions')) {
+            var data = ''
             if (this.$refs[item.key] && item.type == 'select' && !item.hasOwnProperty('multiple')) {
               this.$refs[item.key][0].selectedLabel = this.editData[item.key]
               this.$refs[item.key][0].query = this.editData[item.key]
@@ -549,7 +549,7 @@ export default {
             if (item.hasOwnProperty('optionsQuery')) {
               data = item.optionsQuery
             }
-            getQueryAll(item.getOptions).then(response => {
+            getQueryAll(data == '' ? `${item.getOptions}` : `${item.getOptions}/${data}`).then(response => {
               if (response.data.code == 0) {
                 if (item.type == 'tree' || item.type == 'trans') {
                   if (item.selectButton) {
