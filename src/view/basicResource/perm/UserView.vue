@@ -13,7 +13,7 @@
         <Tool-button-view :permissions="permissions" :selectionCount="tableData.multipleSelection.length" @handleDownload="handleDownload" @handleAdd="handleAdd" @handleDelete="handleDelete"></Tool-button-view>
         <Pagination-view :pageData="pageData" @sizeChange="handleSizeChange" @currentChange="handleCurrentChange"></Pagination-view>
       </div>
-      <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
+      <Table-view :permissions="permissions" :tableData="tableData" ref="basicTable" @change="tableChange" @handleDetail="handleDetail" @handleEdit="handleEdit" @handleDelete="handleDelete">
         <!-- <template slot="button-slot-scope" slot-scope="scopeData">
           <div v-if="permissions.reset" class="tool-div-button button-reset" title="重置密码" @click="handleReset(scopeData.data)"></div>
           <div v-if="permissions.cgPwd" class="tool-div-button button-reset" title="修改密码" @click="handlePwd(scopeData.data)"></div>
@@ -74,7 +74,7 @@ export default {
         className: 'twiceCol',
         key: 'userName',
         formData: [
-          {key: 'userName', label: '登录账号', type: 'input', maxlength: 100},
+          {key: 'userName', label: '登录账号', type: 'input', maxlength: 20},
           {key: 'nickname', label: '用户名', type: 'input', maxlength: 20},
           {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
           {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true},
@@ -145,12 +145,12 @@ export default {
       if (data.currentRow) {
         for (let i = 0; i < this.formData.formData.length; i++) {
           this.$set(this.formData.formData[i], 'value', data.currentRow[this.formData.formData[i].key])
-          if (this.formData.formData[i].key == 'resourceIds') {
-            let obj = {
-              'userName': data.currentRow['userName']
-            }
-            this.$set(this.formData.formData[i], 'optionsQuery', obj)
-          }
+          // if (this.formData.formData[i].key == 'resourceIds') {
+          //   let obj = {
+          //     'userName': data.currentRow['userName']
+          //   }
+          //   this.$set(this.formData.formData[i], 'optionsQuery', obj)
+          // }
         }
       }
     },
@@ -166,6 +166,7 @@ export default {
           this.$set(this.formData.formData[i], 'isHidden', false)
         } else if (this.formData.formData[i].key == 'resourceIds') {
             this.$set(this.formData.formData[i], 'optionsQuery', null)
+            this.$set(this.formData.formData[i], 'isHidden', false)
           }
       }
       this.formData.title = '新增'
@@ -219,7 +220,6 @@ export default {
     // 重置
     handleReset (row) {
       for (let i = 0; i < this.formData.formData.length; i++) {
-        debugger
         this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
         if (this.formData.formData[i].key == 'password') {
           this.$set(this.formData.formData[i], 'isHidden', false)

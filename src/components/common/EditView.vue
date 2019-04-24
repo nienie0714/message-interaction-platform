@@ -747,11 +747,12 @@ export default {
             this.$delete(this.rules, this.formData.formData[i].key)
           }
         }
+        let that = this
         this.$refs['ruleForm'].validate((valid) => {
           if (valid) {
             for (let i = 0; i < this.formData.formData.length; i++) {
               if (this.formData.formData[i].hasOwnProperty('hidden') && this.formData.formData[i].hidden) {
-              } else if (this.formData.formData[i].hidden == false) {
+              } else if (this.formData.formData[i].isHidden == false) {
                 if (this.formData.formData[i].type == 'tree') {
                   if (this.formData.formData[i].hasOwnProperty('saveKey')) {
                     this.editData[this.formData.formData[i].saveKey] = this.$refs['tree' + this.formData.formData[i].key][0].getCheckedKeys()
