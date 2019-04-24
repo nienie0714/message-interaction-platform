@@ -55,6 +55,7 @@ export default {
   mounted () {
     localStorage.setItem('token', '')
     localStorage.setItem('indexTime', '')
+    localStorage.setItem('userName', '')
     window.name = this.$route.name
   },
   methods: {
@@ -72,6 +73,7 @@ export default {
         queryAll(this.loginUrl, this.loginData).then(res => {
           if (res.data.code == 0) {
             localStorage.setItem('token', res.data.data.token ? res.data.data.token : '')
+            localStorage.setItem('userName', this.loginData.username)
             this.$router.push('/basicdata/')
           } else if (res.data.code == -1) {
             this.showError('登录', '用户名或密码错误 !')

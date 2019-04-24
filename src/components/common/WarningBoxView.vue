@@ -13,7 +13,7 @@
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose">取 消</el-button>
-      <el-button type="primary" @click="handleConfirm" :loading="data.loading">确 定</el-button>
+      <el-button v-if="data.hiddenConfirm ? false : true" type="primary" @click="handleConfirm" :loading="data.loading">确 定</el-button>
     </div>
   </el-dialog>
 </template>

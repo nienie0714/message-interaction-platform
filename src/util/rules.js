@@ -17,7 +17,7 @@ var consumerReg = (rule, value, callback) => {
   if (value != '' && value != null) {
     let reg = /^[a-zA-Z0-9_]{1,20}$/
     if (!reg.test(value)) {
-      callback(new Error('消费者编号必须是1-20位数字字母下划线'))
+      callback(new Error('请输入1-20位数字字母下划线'))
     } else {
       callback()
     }

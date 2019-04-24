@@ -31,6 +31,7 @@
     </el-main>
     <Edit-view :formData="formData" @handleAdd="saveAdd" @handleEdit="saveEdit" @handleReset="saveReset" @handlePwd="savePassword"></Edit-view>
     <Warning-box-view :data="deleteData" @handleConfirm="handleDeleteConfirm" @handleClose="handleDeleteClose"></Warning-box-view>
+    <Warning-box-view :data="canNotDeleteData"></Warning-box-view>
   </el-container>
 </template>
 
@@ -42,8 +43,8 @@ import ToolButtonView from '../../../components/common/ToolButtonView'
 import EditView from '../../../components/common/EditView'
 import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
-import {passwordReg, passwordReg418} from '../../../util/rules.js'
-import {postData} from '../../../api/base.js'
+import {passwordReg, passwordReg418, consumerReg} from '../../../util/rules.js'
+import {postData, delData} from '../../../api/base.js'
 
 // const tableHeight = ''
 
@@ -83,10 +84,12 @@ export default {
         ],
         rules: {
           nickname: [
-            {required: true, message: '必填项', trigger: 'blur'}
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: consumerReg, trigger: 'blur'}
           ],
           userName: [
-            {required: true, message: '必填项', trigger: 'blur'}
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: consumerReg, trigger: 'blur'}
           ],
           password: [
             {required: true, message: '必填项', trigger: 'blur'},
@@ -136,6 +139,15 @@ export default {
           {prop: 'userName', label: '登录账号', hidden: false},
           {prop: 'password', label: '密码', hidden: true}
         ]
+      },
+      canNotDeleteData: {
+        visible: false,
+        loading: false,
+        hiddenConfirm: true,
+        width: '500px',
+        class: ' dialog-delete-warn',
+        info: '不能删除正在登陆的用户',
+        data: null
       }
     }
   },
@@ -273,6 +285,48 @@ export default {
         }
         this.formData.loading = false
       })
+    },
+    // 删除
+    handleDelete (row) {
+      let data = []
+      if (row) {
+        if (row[this.tableData.key] == localStorage.getItem('userName')) {
+          this.canNotDeleteData.visible = true
+          return
+        }
+        data.push(row[this.tableData.key])
+      } else {
+        this.tableData.multipleSelection.forEach(item => {
+          if (item[this.tableData.key] != localStorage.getItem('userName')) {
+            data.push(item[this.tableData.key])
+          }
+        })
+        if (data.length == 0) {
+          this.canNotDeleteData.visible = true
+          return
+        }
+      }
+      this.deleteData.data = data.join(',')
+      this.deleteData.visible = true
+      document.addEventListener('keypress', this.handleDeleteConfirm, false)
+    },
+    handleDeleteConfirm (event) {
+      if ((event && event.keyCode == 13) || !event) {
+        this.deleteData.loading = true
+        delData(this.deleteUrl, this.deleteData.data).then(response => {
+          if (response.data.code == 0) {
+            this.showSuccess('删除')
+            this.customMethod()
+            this.queryDataReq(1)
+            this.handleDeleteClose()
+          } else {
+            this.showError('删除', response.data.msg)
+          }
+          this.deleteData.loading = false
+        }).catch(() => {
+          this.deleteData.loading = false
+        })
+      }
     }
   }
 }
