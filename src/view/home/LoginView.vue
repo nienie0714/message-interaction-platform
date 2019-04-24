@@ -16,8 +16,8 @@
             <span>————————&nbsp;&nbsp;&nbsp;&nbsp;LOGIN&nbsp;&nbsp;&nbsp;&nbsp;————————</span>
           </div>
           <div class="login-div-main">
-            <el-input class="login-username" v-model.trim="loginData.username" :placeholder="'请输入用户名'" :maxlength="10" @blur="getPasswordByUsername" @keyup.enter.native="handleLogin"></el-input>
-            <el-input class="login-password" :type="passwordType?'password':null" v-model.trim="loginData.password" :placeholder="'请输入密码'" :maxlength="8" @keyup.enter.native="handleLogin">
+            <el-input class="login-username" v-model.trim="loginData.username" :placeholder="'请输入用户名'" :maxlength="20" @blur="getPasswordByUsername" @keyup.enter.native="handleLogin"></el-input>
+            <el-input class="login-password" :type="passwordType?'password':null" v-model.trim="loginData.password" :placeholder="'请输入密码'" :maxlength="18" @keyup.enter.native="handleLogin">
               <div slot="suffix" :class="passwordType?'login-icon login-password-close':'login-icon login-password-open'" @click="changePassType()"></div>
             </el-input>
             <div class="login-remember">
