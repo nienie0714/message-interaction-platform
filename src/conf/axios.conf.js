@@ -3,10 +3,10 @@ import axios from 'axios'
 import router from '../router/index'
 import Vue from 'vue'
 
-// const forwardURL = '/api'
-// const forwardOtherURL = '/other'
-const forwardURL = ''
-const forwardOtherURL = ''
+const forwardURL = '/api'
+const forwardOtherURL = '/other'
+// const forwardURL = ''
+// const forwardOtherURL = ''
 
 axios.defaults.timeout = 100000
 axios.defaults.baseURL = forwardURL + '/'

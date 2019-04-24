@@ -75,7 +75,7 @@ export default {
         key: 'userName',
         formData: [
           {key: 'userName', label: '登录账号', type: 'input', maxlength: 100},
-          {key: 'nickname', label: '用户名', type: 'input', maxlength: 50},
+          {key: 'nickname', label: '用户名', type: 'input', maxlength: 20},
           {key: 'password', label: '密码', type: 'password', minlength: 4, maxlength: 18},
           {key: 'newPassword', label: '新密码', type: 'password', minlength: 4, maxlength: 18, isHidden: true},
           // {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
@@ -219,6 +219,7 @@ export default {
     // 重置
     handleReset (row) {
       for (let i = 0; i < this.formData.formData.length; i++) {
+        debugger
         this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
         if (this.formData.formData[i].key == 'password') {
           this.$set(this.formData.formData[i], 'isHidden', false)

@@ -751,7 +751,7 @@ export default {
           if (valid) {
             for (let i = 0; i < this.formData.formData.length; i++) {
               if (this.formData.formData[i].hasOwnProperty('hidden') && this.formData.formData[i].hidden) {
-              } else {
+              } else if (this.formData.formData[i].hidden == false) {
                 if (this.formData.formData[i].type == 'tree') {
                   if (this.formData.formData[i].hasOwnProperty('saveKey')) {
                     this.editData[this.formData.formData[i].saveKey] = this.$refs['tree' + this.formData.formData[i].key][0].getCheckedKeys()

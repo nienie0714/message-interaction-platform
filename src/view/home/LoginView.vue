@@ -65,7 +65,7 @@ export default {
       }
     },
     handleLogin () {
-      if (this.loginData.username && this.loginData.username != '') {
+      if ((this.loginData.username && this.loginData.username != '') && (this.loginData.password && this.loginData.password != '')) {
         if (this.remember) {
           localStorage.setItem(this.loginData.username, this.loginData.password)
         }
@@ -79,8 +79,10 @@ export default {
             this.showError('登录', '请求失败，请检查网络 !')
           }
         })
-      } else {
+      } else if (this.loginData.username == '') {
         this.showError('登录', '请输入用户名 !')
+      } else if (this.loginData.password == '') {
+        this.showError('登录', '请输入密码 !')
       }
     },
     changePassType () {

@@ -1,7 +1,10 @@
 <script>
 import { queryPageDataList, getQueryAll } from '../../api/base'
+import baseMixin from './baseMixin'
+import _ from 'lodash'
 
 export default {
+  mixins: [baseMixin],
   data () {
     return {
       // 分页参数
@@ -74,7 +77,7 @@ export default {
     customAfterQuery () {
     },
     setLastUpdateTime () {
-      var now = new Date()
+      var now = this.newTime
       var hour = now.getHours()
       var min = now.getMinutes()
       var second = now.getSeconds()
