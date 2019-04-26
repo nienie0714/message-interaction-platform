@@ -100,9 +100,11 @@ export default {
   },
   methods: {
     findActiveIndex (arr) {
+     if (arr.length > 0) {
       if (arr[0].hasOwnProperty('children') && (arr[0].children != null) && (arr[0].children.length > 0)) {
         this.activeIndex = arr[0].children[0].attributes
       }
+     }
       // this.indexTime = this.indexTime + 1
       // for (let i = 0; i < arr.length; i++) {
       //   console.log(arr[i].children)

@@ -26,6 +26,20 @@ var consumerReg = (rule, value, callback) => {
   }
 }
 
+// 资源校验
+var resourceReg = (rule, value, callback) => {
+  if (value != '' && value != null) {
+    let reg = /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,25}$/
+    if (!reg.test(value)) {
+      callback(new Error('请输入1-25位数字字母汉字下划线'))
+    } else {
+      callback()
+    }
+  } else {
+    callback()
+  }
+}
+
 // 消息类型校验
 var msgNoValidator = (rule, value, callback) => {
   if (value != '' && value != null) {
@@ -55,11 +69,11 @@ var msgCnValidator = (rule, value, callback) => {
 }
 
 // 描述校验
-var msgRemarkValidator = (rule, value, callback) => {
+var urlValidator = (rule, value, callback) => {
   if (value != '' && value != null) {
-    let reg = /^[a-zA-Z0-9_\\u4e00-\\u9fa5]{1,50}$/
+    let reg = /^[a-zA-Z0-9_/]{1,50}$/
     if (!reg.test(value)) {
-      callback(new Error('请输入1-50位数字字母汉字下划线'))
+      callback(new Error('输入1-50位数字字母汉字下划线/'))
     } else {
       callback()
     }
@@ -354,4 +368,4 @@ var chReg = (rule, value, callback) => {
   }
 }
 
-export { passwordReg418, consumerReg, msgNoValidator, msgCnValidator, idReg, maxENReg, ndENReg, rdEReg, rthEReg, idNumReg, phoneReg, sevDotTwoDigit, sixDotSixDigit, threeD, degreePos, passwordReg, sixNum, intNum, twoDecimal, twoDecimalAll, IPReg, portReg, chReg }
+export { passwordReg418, consumerReg, msgNoValidator, msgCnValidator, resourceReg, urlValidator, idReg, maxENReg, ndENReg, rdEReg, rthEReg, idNumReg, phoneReg, sevDotTwoDigit, sixDotSixDigit, threeD, degreePos, passwordReg, sixNum, intNum, twoDecimal, twoDecimalAll, IPReg, portReg, chReg }

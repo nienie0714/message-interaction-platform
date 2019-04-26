@@ -190,6 +190,10 @@ export default {
         this.$set(this.formData.formData[i], 'value', row[this.formData.formData[i].key])
         if (this.formData.formData[i].key == 'password' || this.formData.formData[i].key == 'newPassword') {
           this.$set(this.formData.formData[i], 'isHidden', true)
+        } else if (this.formData.formData[i].key == 'resourceIds') {
+          let data = row.userName
+          this.$set(this.formData.formData[i], 'optionsQuery', data)
+          this.$set(this.formData.formData[i], 'isHidden', false)
         } else {
           this.$set(this.formData.formData[i], 'isHidden', false)
         }

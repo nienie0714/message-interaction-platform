@@ -510,6 +510,8 @@ export default {
                         break
             case '详情': this.$set(this.editData, item.key, item.value)
                         break
+            case '克隆': this.$set(this.editData, item.key, item.defaultValue)
+                        break
           }
         } else if (item.type == 'date' || item.type == 'datetime') {
           switch (title) {
@@ -522,6 +524,8 @@ export default {
             case '编辑': this.$set(this.editData, item.key, item.value)
                         break
             case '详情': this.$set(this.editData, item.key, item.value)
+                        break
+            default: this.$set(this.editData, item.key, item.value)
                         break
           }
         } else if (item.type == 'select' || item.type == 'checkbox' || item.type == 'casc' || item.type == 'trans' || item.type == 'tree' || item.type == 'datetimerange' || item.type == 'slot') {
@@ -818,7 +822,7 @@ export default {
       }
     },
     handleClose () {
-      if (!['新增', '编辑', '详情', '重置密码', '修改密码'].includes(this.formData.title)) {
+      if (!['新增', '编辑', '详情', '重置密码', '修改密码', '克隆'].includes(this.formData.title)) {
         this.$emit('handleOtherCancle')
       } else {
         this.clearTransferQuery()

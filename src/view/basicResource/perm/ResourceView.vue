@@ -28,7 +28,7 @@ import ToolButtonView from '../../../components/common/ToolButtonView'
 import EditView from '../../../components/common/EditView'
 import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
-import {idReg, idNumReg} from '../../../util/rules.js'
+import {idReg, idNumReg, resourceReg, urlValidator} from '../../../util/rules.js'
 
 // const tableHeight = ''
 
@@ -53,7 +53,7 @@ export default {
         key: 'resourceNo',
         formData: [
           {key: 'resourceNo', label: '资源No', type: 'input', isHidden: true},
-          {key: 'name', label: '资源名称', type: 'input', maxlength: 20},
+          {key: 'name', label: '资源名称', type: 'input', maxlength: 25},
           {key: 'url', label: '资源连接地址', type: 'input', maxlength: 200},
           {key: 'icon', label: '资源图标', type: 'input', maxlength: 30},
           {key: 'resourceType', label: '资源类型', type: 'tabs', tabsKey: 'resourceType'},
@@ -62,10 +62,11 @@ export default {
         ],
         rules: {
           name: [
-            {required: true, message: '必填项', trigger: 'blur'}
+            {required: true, message: '必填项', trigger: 'blur'},
+            {validator: resourceReg, trigger: 'blur'}
           ],
-          sortkey: [
-            {validator: idNumReg, trigger: 'blur'}
+          url: [
+            {validator: urlValidator, trigger: 'blur'}
           ]
         }
       },
@@ -113,7 +114,7 @@ export default {
           {prop: 'icon', label: '资源图标', fixed: false, hidden: false},
           {prop: 'resourceType', label: '资源类型', fixed: false, hidden: false, optionKey: 'resourceType'},
           {prop: 'status', label: '是否启用', fixed: false, hidden: false, optionKey: 'isYOrN'},
-          {prop: 'pno', label: '父级资源', fixed: false, hidden: false, overflow: true}
+          {prop: 'pnoCn', label: '父级资源', fixed: false, hidden: false}
         ]
       }
     }

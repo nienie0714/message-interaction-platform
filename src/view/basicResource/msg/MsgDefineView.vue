@@ -100,10 +100,10 @@ export default {
         formData: [
           {key: 'msgTypeId', label: '消息类型Id', type: 'input', isHidden: 'true', maxlength: 50},
           {key: 'msgType', label: '消息类型编号', type: 'input', maxlength: 50},
-          {key: 'msgTypeCn', label: '消息类型名称', type: 'input', maxlength: 18},
+          {key: 'msgTypeCn', label: '消息类型名称', type: 'input', maxlength: 20},
           {key: 'msgSubtype', label: '消息子类型编号', type: 'input', maxlength: 50},
-          {key: 'msgSubtypeCn', label: '消息子类型名称', type: 'input', maxlength: 18},
-          {key: 'msgPubType', label: '消息发布类型', type: 'tabs', tabsKey: 'msgType', options: []},
+          {key: 'msgSubtypeCn', label: '消息子类型名称', type: 'input', maxlength: 20},
+          {key: 'priority', label: '优先级', type: 'number', position: 'right', min: 0, step: 1, max: 10},
           {key: 'lifecycle', label: '生命周期', type: 'number', position: 'right', min: 0, step: 1},
           {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
         ],
@@ -170,7 +170,7 @@ export default {
           {prop: 'msgTypeCn', label: '消息类型名称', fixed: false, hidden: false},
           {prop: 'msgSubtype', label: '消息子类型编号', fixed: false, hidden: false},
           {prop: 'msgSubtypeCn', label: '消息子类型名称', fixed: false, hidden: false},
-          {prop: 'msgPubType', label: '消息发布类型', fixed: false, hidden: false, optionKey: 'msgType'},
+          {prop: 'priority', label: '优先级', fixed: false, hidden: false},
           {prop: 'lifecycle', label: '生命周期', fixed: false, hidden: false} // 0表示永久消息
         ]
       },
@@ -221,6 +221,14 @@ export default {
           })
         }
       })
+    },
+    customSaveBefore (data) {
+      debugger
+      var obj = {}
+      obj = JSON.parse(JSON.stringify(data))
+      this.$set(obj, 'priority', parseInt(obj.priority))
+      this.$set(obj, 'lifecycle', parseInt(obj.lifecycle))
+      return obj
     },
     // 数据同步 todo 修改Url即可
     handleUpdateMqByDb () {

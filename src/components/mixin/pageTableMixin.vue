@@ -59,13 +59,17 @@ export default {
         data: this.queryData
       }
       queryPageDataList(this.queryUrl, data).then(response => {
-        this.setLastUpdateTime()
-        if (response.data.data.hasOwnProperty('rows')) {
-          this.tableData.data = response.data.data.rows
-          if (response.data.data.hasOwnProperty('total')) {
-            this.pageData.total = response.data.data.total
+        if (response.data.code == 0) {
+          this.setLastUpdateTime()
+          if (response.data.data.hasOwnProperty('rows')) {
+            this.tableData.data = response.data.data.rows
+            if (response.data.data.hasOwnProperty('total')) {
+              this.pageData.total = response.data.data.total
+            }
+            this.customAfterQuery()
           }
-          this.customAfterQuery()
+        } else {
+          this.showError('查询', '请重新尝试 !')
         }
       })
       // getQueryAll(this.queryUrl).then(response => {

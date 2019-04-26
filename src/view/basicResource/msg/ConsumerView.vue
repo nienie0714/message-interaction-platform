@@ -54,8 +54,8 @@
         </div>
         <div>
           <el-table height="430" ref="multipleTable" :data="subscribeData.tableData" stripe :highlight-current-row="true" :row-key="subscribeData.key" align="center" style="width: 100%" @selection-change="handleSubSelectionChange">
-            <el-table-column type="selection" align="center" v-if="subscribeData.title == '绑定消息'"></el-table-column>
-            <el-table-column prop="msgType" fixed="left" label="消息类型编号" align="center"></el-table-column>
+            <el-table-column type="selection" fixed="left" align="center" v-if="subscribeData.title == '绑定消息'"></el-table-column>
+            <el-table-column prop="msgType" label="消息类型编号" align="center"></el-table-column>
             <el-table-column prop="msgTypeCn" label="消息类型名称" align="center"></el-table-column>
             <el-table-column prop="msgSubtype" label="消息子类型编号" align="center"></el-table-column>
             <el-table-column prop="msgSubtypeCn" label="消息子类型名称" align="center"></el-table-column>
@@ -123,11 +123,11 @@ export default {
           {key: 'confirmPassword', label: '确认密码', type: 'password', minlength: 4, maxlength: 18, isHidden: false},
           {key: 'expiryTime', label: '过期时间', type: 'datetime', format: 'yyyy-MM-dd HH:mm:ss', valueFormat: 'yyyy-MM-dd HH:mm:ss', defaultValue: '', pickerOpt: this.pickerOptMethod, change: this.expiryValidator},
           {key: 'isConfirm', label: '是否确认', type: 'tabs', tabsKey: 'isYOrN', options: [], defaultValue: 'N'},
-          {key: 'isUseable', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN', options: []}
+          {key: 'isUseable', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN', options: [], defaultValue: 'Y'}
         ],
         rules: {
           consumerNo: [
-            {required: true, message: '消费者编号不能为空', trigger: 'blur'},
+            {required: true, message: '必填项', trigger: 'blur'},
             {validator: consumerReg, trigger: 'blur'}
           ],
           consumerPwd: [
@@ -438,14 +438,14 @@ export default {
       this.subscribeData.title = '绑定消息'
       if (this.formData.visible) {
         this.formData.loading = false
-      } else {
-        this.subscribeData.loading = false
-        this.subscribeData.visible = false
-        // 清空数据
-        this.subscribeData.data = {}
-        this.subscribeData.tableData = []
-        this.subscribeData.multipleSelection = []
       }
+
+      this.subscribeData.loading = false
+      this.subscribeData.visible = false
+      // 清空数据
+      this.subscribeData.data = {}
+      this.subscribeData.tableData = []
+      this.subscribeData.multipleSelection = []
     },
     handleSubSelectionChange (val) {
       this.subscribeData.multipleSelection = val
