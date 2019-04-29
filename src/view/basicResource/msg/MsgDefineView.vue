@@ -73,7 +73,7 @@ import basicTableMixin from '../../../components/mixin/basicTableMixin'
 import pageTableMixin from '../../../components/mixin/pageTableMixin'
 import { queryAll, getQueryAll, postData } from '../../../api/base.js'
 import _ from 'lodash'
-import {twoDecimal, threeD, phoneReg, maxENReg, msgNoValidator, msgCnValidator} from '../../../util/rules.js'
+import {twoDecimal, threeD, phoneReg, maxENReg, msgNoValidator, msgCnValidator, remarkReg} from '../../../util/rules.js'
 
 export default {
   components: {
@@ -105,7 +105,7 @@ export default {
           {key: 'msgSubtypeCn', label: '消息子类型名称', type: 'input', maxlength: 20},
           {key: 'priority', label: '优先级', type: 'number', position: 'right', min: 0, step: 1, max: 10},
           {key: 'lifecycle', label: '生命周期', type: 'number', position: 'right', min: 0, step: 1},
-          {key: 'remark', label: '备注', type: 'textarea', autosize: true, maxlength: 100}
+          {key: 'remark', label: '备注', type: 'textarea', class: 'auto-height auto-width', autosize: true, maxlength: 50}
         ],
         rules: {
           msgType: [
@@ -123,6 +123,9 @@ export default {
           msgSubtypeCn: [
             {required: true, message: '必填项', trigger: 'blur'},
             {validator: msgCnValidator, trigger: 'blur'}
+          ],
+          remark: [
+            {validator: remarkReg, trigger: 'blur'}
           ]
         }
       },
@@ -223,7 +226,6 @@ export default {
       })
     },
     customSaveBefore (data) {
-      debugger
       var obj = {}
       obj = JSON.parse(JSON.stringify(data))
       this.$set(obj, 'priority', parseInt(obj.priority))

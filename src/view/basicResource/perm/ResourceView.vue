@@ -54,7 +54,7 @@ export default {
         formData: [
           {key: 'resourceNo', label: '资源No', type: 'input', isHidden: true},
           {key: 'name', label: '资源名称', type: 'input', maxlength: 25},
-          {key: 'url', label: '资源连接地址', type: 'input', maxlength: 200},
+          {key: 'url', label: '资源连接地址', type: 'input', maxlength: 50},
           {key: 'icon', label: '资源图标', type: 'input', maxlength: 30},
           {key: 'resourceType', label: '资源类型', type: 'tabs', tabsKey: 'resourceType'},
           {key: 'status', label: '是否启用', type: 'tabs', tabsKey: 'isYOrN'},
@@ -120,6 +120,15 @@ export default {
     }
   },
   methods: {
+    customSaveBefore (data) {
+      var obj = {}
+      // if (this.formData.title == '编辑') {
+        obj = JSON.parse(JSON.stringify(data))
+        let pno = obj.parentIds[obj.parentIds.length - 1]
+        this.$set(obj, 'pno', pno)
+      // }
+      return obj
+    }
   }
 }
 </script>

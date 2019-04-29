@@ -237,14 +237,17 @@ export default {
     handleAdd () {
       for (let i = 0; i < this.formData.formData.length; i++) {
         this.$set(this.formData.formData[i], 'value', '')
-        this.$set(this.formData.formData[i], 'disabled', false)
         this.$set(this.formData.formData[i], 'isHidden', false)
         if (this.formData.formData[i].key == 'consumerNo') {
           this.$set(this.formData.formData[i], 'type', 'input')
         }
         if (this.formData.formData[i].key == 'expiryTime') {
+          this.$delete(this.formData.formData[i], 'disabled')
           this.nowTime = new Date()
           this.$set(this.formData.formData[i], 'pickerOpt', this.pickerOptMethod)
+        }
+        if (this.formData.formData[i].key == 'isConfirm') {
+          this.$delete(this.formData.formData[i], 'disabled')
         }
       }
       this.formData.title = '新增'
@@ -335,9 +338,13 @@ export default {
         } else if (this.formData.formData[i].key == 'isConfirm') {
           this.$set(this.formData.formData[i], 'isHidden', false)
           this.$set(this.formData.formData[i], 'disabled', true)
+        } else if (this.formData.formData[i].key == 'isUseable') {
+          this.$set(this.formData.formData[i], 'isHidden', false)
+          this.$delete(this.formData.formData[i], 'disabled')
         } else if (this.formData.formData[i].key == 'expiryTime') {
           this.nowTime = new Date()
           this.$set(this.formData.formData[i], 'isHidden', false)
+          this.$delete(this.formData.formData[i], 'disabled')
           this.$set(this.formData.formData[i], 'pickerOpt', this.pickerOptMethod)
         } else {
           this.$set(this.formData.formData[i], 'isHidden', false)
@@ -477,7 +484,6 @@ export default {
       this.sourceConsumerNo = row.consumerNo
       for (let i = 0; i < this.formData.formData.length; i++) {
         this.$set(this.formData.formData[i], 'value', '')
-        this.$set(this.formData.formData[i], 'disabled', false)
         this.$set(this.formData.formData[i], 'isHidden', false)
         if (this.formData.formData[i].key == 'consumerNo') {
           this.$set(this.formData.formData[i], 'type', 'input')
@@ -485,6 +491,9 @@ export default {
         if (this.formData.formData[i].key == 'expiryTime') {
           this.nowTime = new Date()
           this.$set(this.formData.formData[i], 'pickerOpt', this.pickerOptMethod)
+        }
+        if (this.formData.formData[i].key == 'isConfirm') {
+          this.$delete(this.formData.formData[i], 'disabled')
         }
       }
       this.formData.title = '克隆'
