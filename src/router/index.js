@@ -49,11 +49,11 @@ var router = new Router({
               name: '用户管理',
               component: r => require.ensure([], () => r(require('@/view/basicResource/perm/UserView'), 'UserView'))
             },
-            {
-              path: 'log',
-              name: '系统日志',
-              component: r => require.ensure([], () => r(require('@/view/basicResource/perm/LogView'), 'LogView'))
-            },
+            // {
+            //   path: 'log',
+            //   name: '系统日志',
+            //   component: r => require.ensure([], () => r(require('@/view/basicResource/perm/LogView'), 'LogView'))
+            // },
             {
               path: 'resource',
               name: '系统资源',

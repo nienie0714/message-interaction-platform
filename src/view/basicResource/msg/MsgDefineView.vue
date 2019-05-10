@@ -137,10 +137,10 @@ export default {
           value: null,
           type: 'select',
           filterable: true,
-          inputText: '消息类型',
+          inputText: '消息类型编号',
           getOptions: 'manage/msgDefinition/type/msgType',
           optKey: 'msgType',
-          optLabel: 'msgTypeCn',
+          optLabel: 'msgType',
           span: 3
         }, {
           // 'p': '消息子类型',
@@ -148,10 +148,10 @@ export default {
           value: null,
           type: 'select',
           filterable: true,
-          inputText: '消息子类型',
+          inputText: '消息子类型编号',
           getOptions: 'manage/msgDefinition/type/msgSubtype',
           optKey: 'msgSubtype',
-          optLabel: 'msgSubtypeCn',
+          optLabel: 'msgSubtype',
           span: 3
         }
       ],

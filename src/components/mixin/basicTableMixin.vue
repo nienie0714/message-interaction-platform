@@ -72,11 +72,7 @@ export default {
     }
     this.getQueryOptions()
     this.queryRowGroup = this.rowGroup()
-    if (this.pageData != null) {
-      this.queryDataReq()
-    } else {
-      this.queryDataReq()
-    }
+    this.queryDataReq()
   },
   mounted () {
     var _this = this
